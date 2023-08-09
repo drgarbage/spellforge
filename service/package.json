@@ -1,0 +1,22 @@
+{
+  "name": "yoonji-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Johnson Wang",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.3.4",
+    "firebase": "^9.19.1",
+    "instagram-private-api": "^1.45.3",
+    "moment-timezone": "^0.5.42",
+    "node-schedule": "^2.1.1",
+    "openai": "^3.2.1",
+    "sharp": "^0.31.3"
+  },
+  "scripts": {
+    "build": "docker build -t drgarbage/yoonji-auto:latest .",
+    "push": "docker push drgarbage/yoonji-auto:latest",
+    "deploy": "yarn build && yarn push",
+    "run": "docker run -p 3000:3000 -d my-node-app"
+  }
+}

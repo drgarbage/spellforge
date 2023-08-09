@@ -1,0 +1,55 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "docker:build": "docker build -t drgarbage/yoonji-console:latest .",
+    "docker:push": "docker push drgarbage/yoonji-console:latest",
+    "docker:reload": "ssh -t -p 50322 -i ~/.ssh/id_rsa rhythm@dev.printii.com 'bash -i -c \"./Development/02.Projects/yoon-ji/reload.sh\"'",
+    "deploy": "yarn docker:build && yarn docker:push"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@line/bot-sdk": "^7.5.2",
+    "@nextui-org/react": "^1.0.0-beta.12",
+    "firebase": "^9.19.1",
+    "fs": "^0.0.1-security",
+    "google-translate-api-x": "^10.6.7",
+    "i18next": "^22.4.15",
+    "idb": "^7.1.1",
+    "instagram-web-api": "^2.2.2",
+    "meta-png": "^1.0.6",
+    "moment-timezone": "^0.5.42",
+    "nanoid": "^4.0.2",
+    "net": "^1.0.2",
+    "next": "latest",
+    "next-i18next": "^13.2.2",
+    "openai": "^3.2.1",
+    "react": "^18.2.0",
+    "react-depth-map": "^1.0.9",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hot-toast": "^2.4.0",
+    "react-i18next": "^12.2.0",
+    "react-iconly": "^2.2.6",
+    "react-markdown": "^8.0.7",
+    "react-multi-carousel": "^2.8.3",
+    "react-range": "^1.8.14",
+    "react-swipeable": "^7.0.0",
+    "tiny-uid": "^1.1.2",
+    "tls": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.15.5",
+    "@types/react": "18.0.28",
+    "typescript": "5.0.2"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  }
+}
