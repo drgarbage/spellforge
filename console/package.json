@@ -15,6 +15,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@line/bot-sdk": "^7.5.2",
     "@nextui-org/react": "^1.0.0-beta.12",
+    "axios": "^1.4.0",
     "firebase": "^9.19.1",
     "fs": "^0.0.1-security",
     "google-translate-api-x": "^10.6.7",

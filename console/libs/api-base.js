@@ -1,24 +1,23 @@
+const axios = require('axios');
+
 const request = async (
     url, { method = 'GET', headers = {}, body = undefined }
   ) => {
-  const dest = `${location.protocol}//${url.replace('http://', '').replace('https://', '')}`;
-  const response = await fetch(dest, {
+  const protocol = typeof(window) !== 'undefined' && window.location ? window.location.protocol : 'https:';
+  const dest = `${protocol}//${url.replace('http://', '').replace('https://', '')}`;
+
+  const response = await axios({
     method,
-    mode: 'cors',
+    url: dest,
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       ...headers
     },
-    body: !!body ? JSON.stringify(body) : undefined
+    data: body
   });
 
-  if(!response.ok)
-    throw new Error('Network Error');
-
-  const result = await response.json();
-
-  return result;
+  return response.data;
 }
 
-module.exports = { request };
+export { request };

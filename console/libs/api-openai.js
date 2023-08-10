@@ -15,4 +15,22 @@ const completions = ({prompt, apiKey = null}) => {
   });
 }
 
-module.exports = { completions };
+const chats = ({system, conversations, apiKey = null}) => {
+  if(!apiKey) throw new Error('ERR.OPENAI_API_KEY_INCORRECT');
+  const configuration = new Configuration({ apiKey });
+  const openai = new OpenAIApi(configuration);
+  return openai.createChatCompletion({
+    model: "gpt-4",
+    messages: [
+      system,
+      ...conversations
+    ],
+    temperature: 1,
+    max_tokens: 256,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
+}
+
+module.exports = { completions, chats };
