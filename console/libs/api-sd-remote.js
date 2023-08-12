@@ -94,6 +94,9 @@ const sdapi = (h) => {
 
     interrogate: (image, model = "clip") =>
       request(`${host}/sdapi/v1/interrogate`, {method: 'POST', body: {image, model}}),
+
+    rembg: (image) =>
+      request(`${host}/sdapi/v1/rembg/remove_background`, {method: 'POST', body: { image }}),
   
   };
 };

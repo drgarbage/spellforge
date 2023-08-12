@@ -490,11 +490,6 @@
     protobufjs "^7.0.0"
     yargs "^16.2.0"
 
-"@imgly/background-removal@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@imgly/background-removal/-/background-removal-1.0.6.tgz#03bd772c027347ae7155bd3813a1796f179858a9"
-  integrity sha512-ExO82TiTj0HTEMsTUCQ6krCbZxgr5ao2G5ktizD3YpeRxiHMEZeH7AWDDho8mNcw8kgtjF9geHLAhiW9CQ8dUA==
-
 "@internationalized/date@^3.0.1", "@internationalized/date@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@internationalized/date/-/date-3.1.0.tgz"

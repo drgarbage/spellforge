@@ -40,6 +40,13 @@ export const handleImage = async (event) => {
 
     const imageContent = await getImageContent(event.message.id);
     const userImageBase64 = await convertStreamToBase64(imageContent);
+    const rs = await sdapi(sdapiHost).rembg(userImageBase64);
+    const { image: rembgImageBase64 } = rs;
+
+    // const rembgImageUrl = await upload(`/images/bot/${moment().unix()}.png`, rembgImageBase64, {contentType: 'image/png'});
+
+    // await pushImages(event, rembgImageUrl);
+
     const prompt = `anime style, flat, (monochrome:1.2), icon, abstract <lora:animeoutlineV3:0.3>`;
 
     const { images: rawImages } = 
@@ -47,26 +54,27 @@ export const handleImage = async (event) => {
         .txt2img({
           prompt, 
           negative_prompt: SDAPI_DEFAULT_NEG,
-          width: 256,
-          height: 256,
+          width: 768,
+          height: 768,
+          steps: 20,
           cfg_scale: 10,
           sampler_index: 'Euler a',
-          enable_hr: true,
-          denoising_strength: 0.5,
-          hr_scale: 3,
-          hr_upscaler: "R-ESRGAN 4x+",
-          hr_second_pass_steps: 0,
+          // enable_hr: true,
+          // denoising_strength: 0.5,
+          // hr_scale: 3,
+          // hr_upscaler: "R-ESRGAN 4x+",
+          // hr_second_pass_steps: 0,
           alwayson_scripts: {
             controlnet: {
               args: [
                 {
-                  input_image: userImageBase64,
+                  input_image: rembgImageBase64,
                   module: "lineart_realistic",
                   model: "control_v11p_sd15_lineart [43d4be0d]",
                   processor_res: 512,
-                  weight: 1.7,
-                  resize_mode: 1,
-                  guidance_start: 0.1,
+                  weight: 1,
+                  resize_mode: 2,
+                  guidance_start: 0,
                   guidance_end: 1.0
                 }
               ]
@@ -80,6 +88,6 @@ export const handleImage = async (event) => {
       {contentType: 'image/png'}
     )
 
-    pushImages(event, imageUrl);
+    await pushImages(event, imageUrl);
   }
 }
