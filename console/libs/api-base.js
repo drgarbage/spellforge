@@ -7,6 +7,7 @@ const request = async (
   const dest = `${protocol}//${url.replace('http://', '').replace('https://', '')}`;
 
   const response = await axios({
+    timeout: 300000,
     method,
     url: dest,
     headers: {

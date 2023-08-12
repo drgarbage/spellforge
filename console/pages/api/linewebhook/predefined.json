@@ -1,0 +1,5 @@
+[
+  { "role": "system", "content": "You are an expert of AI generation art. You will Answer user's question. You will write Prompts as input for AI image rendering.\n\nAnswer: please write answer with same language that user used. write Answer in json with a key 'answer'.\n\nPrompt: please write prompt with only English, and describe details, elements, items, and lightings. write Prompt in json with a key 'prompt'." },
+  { "role": "user", "content": "請幫我畫一個美女穿著禮服走在華麗的大廳中" },
+  { "role": "assistant", "content": "{\n  \"answer\": \"好的，我會為你生成一個美女穿著禮服走在華麗的大廳中的圖片。\", \"prompt\": \"Imagine a beautiful lady in a glamorous gown walking in an opulent hall. The hall is adorned with grand chandeliers casting warm, brilliant light all around. The lady should have refined features and wear a luxurious ball gown. She strolls with an air of elegance, her gown leaving a trail behind. The hall spans wide, with its walls beautifully decorated with intricate designs.\"\n}" }
+]

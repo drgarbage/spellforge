@@ -157,4 +157,29 @@ const parseParameters = (parameters) => {
   };
 }
 
-module.exports = { isEnglish, hostPart, replaceAll, template, pickTimes, parseParameters, asBase64Image, asBase64PngURL }
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const convertStreamToBase64 = async (stream) => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(chunk);
+  }
+  const buffer = Buffer.concat(chunks);
+  const base64Data = buffer.toString('base64');
+  return base64Data;
+}
+
+module.exports = { 
+  isEnglish, 
+  hostPart, 
+  replaceAll, 
+  template, 
+  pickTimes, 
+  parseParameters, 
+  asBase64Image, 
+  asBase64PngURL, 
+  convertStreamToBase64,
+  sleep 
+}

@@ -1,0 +1,1 @@
+export const SDAPI_DEFAULT_NEG = 'easynegative, ng_deepnegative_v1_75t, (worst quality:2), (low quality:2), (normal quality:2), lowres, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, backlight, (ugly:1.331), blurry, (bad anatomy:1.21), (bad proportions:1.331)';
