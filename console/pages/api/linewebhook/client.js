@@ -13,8 +13,11 @@ export default client;
 export const from = (event) =>
   event.source.groupId || event.source.userId;
 
+export const replyText = (event, text) =>
+  client.replyMessage(from(event), {type:'text', text}).catch(console.error);
+
 export const pushText = (event, text) => 
-  client.pushMessage(from(event), {type:'text', text});
+  client.pushMessage(from(event), {type:'text', text}).catch(console.error);
 
 export const pushImages = (event, imageUrls) =>
   client.pushMessage(from(event), 
@@ -23,4 +26,4 @@ export const pushImages = (event, imageUrls) =>
         type:'image', 
         originalContentUrl: imageUrl, 
         previewImageUrl: imageUrl
-      })));
+      }))).catch(console.error);

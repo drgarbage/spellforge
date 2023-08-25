@@ -1,5 +1,5 @@
 import { SDAPI_DEFAULT_NEG } from './constants';
-import { pushText, pushImages } from './client';
+import { pushText, pushImages, replyText } from './client';
 import { chats } from 'libs/api-openai';
 import { upload } from 'libs/api-firebase';
 
@@ -13,6 +13,7 @@ const {
 } = process.env;
 
 export const handleText = async (event) => {
+  const initial = new Date();
 
   if(!['幫我畫', '幫我設計', '我想問', '我就問', '請教一下']
     .some(keyword => event.message.text.includes(keyword)))
@@ -28,7 +29,12 @@ export const handleText = async (event) => {
   const data = rs?.data?.choices[0].message.content;
   const {answer, prompt} = JSON.parse(data);
 
-  if(!!answer) await pushText(event, answer);
+  if(!!answer) {
+    if(initial - new Date() > 10000)
+      await pushText(event, answer);
+    else
+      await replyText(event, answer);
+  }
 
   if(!!prompt) {
     const { images: rawImages } = await sdapi(sdapiHost).txt2img({

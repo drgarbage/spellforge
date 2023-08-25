@@ -1,7 +1,7 @@
 import { SDAPI_DEFAULT_NEG } from './constants';
 import { upload } from 'libs/api-firebase';
 import { sleep, convertStreamToBase64 } from 'libs/utils';
-import client, { pushImages, pushText } from './client';
+import client, { pushImages, pushText, replyText } from './client';
 import sdapi from 'libs/api-sd-remote';
 import moment from 'moment-timezone';
 
@@ -33,10 +33,11 @@ const getImageContent = async (imageId) => {
 
 
 export const handleImage = async (event) => {
+  const initial = new Date();
 
   if(event.message.contentProvider.type === 'line') {
 
-    await pushText(event, '好的，正在處理照片');
+    await replyText(event, '好的，正在處理照片');
 
     const imageContent = await getImageContent(event.message.id);
     const userImageBase64 = await convertStreamToBase64(imageContent);
@@ -47,15 +48,15 @@ export const handleImage = async (event) => {
 
     // await pushImages(event, rembgImageUrl);
 
-    const prompt = `anime style, flat, (monochrome:1.2), icon, abstract <lora:animeoutlineV3:0.3>`;
+    const prompt = `anime style, flat, (monochrome:1.2), icon, abstract <lora:animeoutlineV3:0.6>`;
 
     const { images: rawImages } = 
       await sdapi(sdapiHost)
         .txt2img({
           prompt, 
           negative_prompt: SDAPI_DEFAULT_NEG,
-          width: 768,
-          height: 768,
+          width: 1024,
+          height: 1024,
           steps: 20,
           cfg_scale: 10,
           sampler_index: 'Euler a',
@@ -71,7 +72,8 @@ export const handleImage = async (event) => {
                   input_image: rembgImageBase64,
                   module: "lineart_realistic",
                   model: "control_v11p_sd15_lineart [43d4be0d]",
-                  processor_res: 512,
+                  pixel_perfect: true,
+                  processor_res: 1024,
                   weight: 1,
                   resize_mode: 2,
                   guidance_start: 0,
