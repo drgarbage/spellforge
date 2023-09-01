@@ -28,18 +28,38 @@ export const pushText = (event, text) =>
 
 export const replyImages = (event, imageUrls) =>
   client.replyMessage(event.replyToken,  
-    (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(
-      imageUrl => ({
-        type:'image', 
-        originalContentUrl: imageUrl, 
-        previewImageUrl: imageUrl
-      }))).catch(console.error);
+    {
+      type: 'template',
+      altText: `照片`,
+      template: {
+        type: 'image_carousel',
+        columns: (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(imageUrl => ({ 
+          imageUrl,
+          action: {
+            type: "uri",
+            label: "檢視照片",
+            uri: imageUrl
+          }
+        }))
+      }
+    }
+  ).catch(onError);
 
 export const pushImages = (event, imageUrls) =>
   client.pushMessage(from(event), 
-    (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(
-      imageUrl => ({
-        type:'image', 
-        originalContentUrl: imageUrl, 
-        previewImageUrl: imageUrl
-      }))).catch(console.error);
+    {
+      type: 'template',
+      altText: `照片`,
+      template: {
+        type: 'image_carousel',
+        columns: (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(imageUrl => ({ 
+          imageUrl, 
+          action: {
+            type: "uri",
+            label: "檢視照片",
+            uri: imageUrl
+          }
+        }))
+      }
+    }
+  ).catch(onError);

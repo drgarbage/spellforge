@@ -30,7 +30,7 @@ export const handleText = async (event) => {
   const {answer, prompt} = JSON.parse(data);
 
   if(!!answer) {
-    if(initial - new Date() > 10000)
+    if(initial - new Date() > 30000)
       await pushText(event, answer);
     else
       await replyText(event, answer);
@@ -41,7 +41,7 @@ export const handleText = async (event) => {
       prompt, 
       negative_prompt: SDAPI_DEFAULT_NEG, 
       restore_faces: true, 
-      batch_size: 1
+      batch_size: 4
     });
     const imageUrls = await Promise.all(rawImages.map((base64Image, index) => 
       upload(

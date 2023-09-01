@@ -1,7 +1,7 @@
 import { SDAPI_DEFAULT_NEG } from './constants';
 import { upload } from 'libs/api-firebase';
 import { sleep, convertStreamToBase64 } from 'libs/utils';
-import client, { pushImages, pushText, replyText } from './client';
+import client, { pushImages, replyImages } from './client';
 import sdapi from 'libs/api-sd-remote';
 import moment from 'moment-timezone';
 
@@ -33,38 +33,36 @@ const getImageContent = async (imageId) => {
 
 
 export const handleImage = async (event) => {
-  const initial = new Date();
+  const initial = moment();
 
   if(event.message.contentProvider.type === 'line') {
-
-    await replyText(event, '好的，正在處理照片');
 
     const imageContent = await getImageContent(event.message.id);
     const userImageBase64 = await convertStreamToBase64(imageContent);
     const rs = await sdapi(sdapiHost).rembg(userImageBase64);
     const { image: rembgImageBase64 } = rs;
 
-    // const rembgImageUrl = await upload(`/images/bot/${moment().unix()}.png`, rembgImageBase64, {contentType: 'image/png'});
-
-    // await pushImages(event, rembgImageUrl);
-
-    const prompt = `anime style, flat, (monochrome:1.2), icon, abstract <lora:animeoutlineV3:0.6>`;
+    const prompt = 'line art, sketch, outline, stroke, ultra detailed, (monochrome:1.2), (white background:1.4), (no background:1.4) <lora:animeoutlineV3:0.8>';
+    // const prompt = `anime style, flat, icon, abstract, (monochrome:1.2), (empty background:1.3), (white background:1.3) <lora:animeoutlineV3:0.6>`;
 
     const { images: rawImages } = 
       await sdapi(sdapiHost)
         .txt2img({
           prompt, 
-          negative_prompt: SDAPI_DEFAULT_NEG,
+          negative_prompt: SDAPI_DEFAULT_NEG + ' (fill:1.3), (background:1.3), (shadow:1.3)',
           width: 1024,
-          height: 1024,
-          steps: 20,
+          height: 768,
+          steps: 40,
           cfg_scale: 10,
           sampler_index: 'Euler a',
+          batch_size: 4,
+          // do_not_save_grid: true,
           // enable_hr: true,
-          // denoising_strength: 0.5,
-          // hr_scale: 3,
+          // denoising_strength: 0.4,
+          // hr_scale: 1.334,
           // hr_upscaler: "R-ESRGAN 4x+",
           // hr_second_pass_steps: 0,
+          seed: 2062640071,
           alwayson_scripts: {
             controlnet: {
               args: [
@@ -83,13 +81,22 @@ export const handleImage = async (event) => {
             }
           }
         });
-    
-    const imageUrl = await upload(
-      `/images/bot/${moment().unix()}.png`,
-      rawImages[0],
-      {contentType: 'image/png'}
-    )
+        
+    const sequence = moment().unix();
+    const meta = {contentType: 'image/png'};
 
-    await pushImages(event, imageUrl);
+    const imageUrls = await Promise.all(
+      rawImages.map(
+        (rawImage, index) => 
+          upload(`/images/bot/${sequence}-${index}.png`, rawImage, meta)
+            .catch(()=>null)
+      )
+    );
+        
+    try{
+      await replyImages(event, imageUrls);
+    } catch (err) {
+      await pushImages(event, imageUrls).catch(() => null);
+    }
   }
 }
