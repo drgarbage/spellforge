@@ -101,3 +101,10 @@ export const upload = async (path, base64Data, meta = undefined) => {
   const imageUrl = await getDownloadURL(storageRef);
   return imageUrl;
 };
+
+export const estimateURL = async (path) => {
+  const storage = getStorage();
+  const storageRef = ref(storage, path);
+  const imageUrl = await getDownloadURL(storageRef);
+  return imageUrl;
+}

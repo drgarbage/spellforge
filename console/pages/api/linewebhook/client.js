@@ -19,6 +19,15 @@ export const replyText = (event, text) =>
 export const pushText = (event, text) => 
   client.pushMessage(from(event), {type:'text', text}).catch(console.error);
 
+export const replyImages = (event, imageUrls) =>
+  client.replyMessage(from(event), 
+    (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(
+      imageUrl => ({
+        type:'image', 
+        originalContentUrl: imageUrl, 
+        previewImageUrl: imageUrl
+      }))).catch(console.error);
+
 export const pushImages = (event, imageUrls) =>
   client.pushMessage(from(event), 
     (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(

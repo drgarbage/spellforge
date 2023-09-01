@@ -6,7 +6,8 @@
     "docker:build": "docker build -t drgarbage/yoonji-console:latest .",
     "docker:push": "docker push drgarbage/yoonji-console:latest",
     "docker:reload": "ssh -t -p 50322 -i ~/.ssh/id_rsa rhythm@dev.printii.com 'bash -i -c \"./Development/02.Projects/yoon-ji/reload.sh\"'",
-    "deploy": "yarn docker:build && yarn docker:push"
+    "deploy": "yarn docker:build && yarn docker:push",
+    "ngrok": "ngrok http --domain=wildcat-magnetic-openly.ngrok-free.app 3000"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
