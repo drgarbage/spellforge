@@ -8,19 +8,26 @@ const {
 
 const client =  new Client({channelAccessToken, channelSecret});
 
+const onError = error => {
+  console.error(
+    error.message,
+    error?.originalError?.response?.data
+  );
+}
+
 export default client;
 
 export const from = (event) =>
   event.source.groupId || event.source.userId;
 
 export const replyText = (event, text) =>
-  client.replyMessage(from(event), {type:'text', text}).catch(console.error);
+  client.replyMessage(event.replyToken, {type:'text', text}).catch(onError);
 
 export const pushText = (event, text) => 
-  client.pushMessage(from(event), {type:'text', text}).catch(console.error);
+  client.pushMessage(from(event), {type:'text', text}).catch(onError);
 
 export const replyImages = (event, imageUrls) =>
-  client.replyMessage(from(event), 
+  client.replyMessage(event.replyToken,  
     (Array.isArray(imageUrls) ? imageUrls : [imageUrls]).map(
       imageUrl => ({
         type:'image', 
