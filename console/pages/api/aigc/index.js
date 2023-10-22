@@ -1,11 +1,21 @@
 import amqplib from 'amqplib';
 import { customAlphabet } from 'nanoid';
-import { save } from 'libs/api-firebase';
+import { save, document } from 'libs/api-firebase';
+import { observe } from 'libs/api-firebase';
 
 const { AMQP_HOST, AMQP_CALLBACK_HOST } = process.env;
 // const AMQP_CALLBACK_HOST = 'http://192.168.50.94:3000';
 
+export const config = {
+  api: {
+      bodyParser: {
+          sizeLimit: '100mb' // Set desired value here
+      }
+  }
+}
+
 export default async (req, res) => {
+  let responsed = false;
   const taskId = customAlphabet('1234567890abcdef', 6)();
   const task = {
     ...req.body,
@@ -18,7 +28,13 @@ export default async (req, res) => {
     createAt: new Date(),
   };
 
-  await save('tasks-aigc', taskId, task);
+  await save('tasks-aigc', taskId, {...task, params: { ...task.params, init_images: [], alwayson_scripts: {} }});
+  const unsubscribe = observe('tasks-aigc', taskId, (doc) => {
+    if(responsed) return;
+    if(!doc.result) return;
+    responsed = true;
+    res.status(200).json(doc);
+  });
 
   const queue = 'generation';
   const conn = await amqplib.connect(AMQP_HOST);
@@ -32,5 +48,16 @@ export default async (req, res) => {
   channel.close();
   conn.close();
 
-  res.status(200).json(task);
+  setTimeout(async () => {
+    if(responsed) return;
+    unsubscribe();
+    let latestTask = task;
+    try{
+      latestTask = await document('tasks-aigc', taskId);
+    }catch(err){
+      console.error(err.message);
+    }finally{
+      res.status(200).json(latestTask);
+    }
+  }, 18000);
 }

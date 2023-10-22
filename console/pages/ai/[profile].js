@@ -5,6 +5,7 @@ import { txt2img } from '../../libs/api-sd';
 import { fetchWeather } from '../../libs/api-weather';
 import { Card, Grid, Col, Text, Button, Navbar, IconButton, Loading, Checkbox, Modal } from '@nextui-org/react';
 import { Send, InfoSquare } from 'react-iconly';
+import { ensureImageURL } from 'libs/utils';
 import toast, { Toaster } from 'react-hot-toast';
 import profiles from '../../profiles';
 import moment from 'moment-timezone';
@@ -138,8 +139,8 @@ export default function Home() {
     
     try{
       const imagesForShare = post?.images.filter((img, index) => selectedImages.includes(index));
-      const files = await Promise.all(imagesForShare.map(async (base64img, index) => {
-        const blob = await(await fetch(`data:image/png;base64,${base64img}`)).blob();
+      const files = await Promise.all(imagesForShare.map(async (image, index) => {
+        const blob = await(await fetch(ensureImageURL(image))).blob();
         const file = new File([blob], `photo-${index}.png`, { type: blob.type });
         return file;
       }));
@@ -228,7 +229,7 @@ export default function Home() {
         <meta property="og:title" content={post?.prompt || profile.name} />
         <meta property="og:description" content={post?.comment || profile.name} />
         {post?.images.length > 0 && post?.images.map((item,index) => 
-          <meta key={index} property="og:image" content={`data:image/png;base64,${item}`} />
+          <meta key={index} property="og:image" content={ensureImageURL(item)} />
         )}
         <meta property="og:image:width" content={size.width} />
         <meta property="og:image:height" content={size.height} />
@@ -268,7 +269,7 @@ export default function Home() {
             <PhotoCard 
               title={profile.name}
               subtitle={profile.username}
-              image={`data:image/png;base64,${item}`}
+              image={ensureImageURL(item)}
               checked={selectedImages.includes(index)}
               onToggle={() => toggleImageSelection(index)}
               />

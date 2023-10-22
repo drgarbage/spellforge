@@ -91,6 +91,9 @@ const asBase64Image = (base64URL) =>
 const asBase64PngURL = (base64Data) =>
   `data:image/png;base64,${asBase64Image(base64Data)}`;
 
+const ensureImageURL = (base64StringOrURL) =>
+  base64StringOrURL.startsWith('http') ? base64StringOrURL : asBase64PngURL(base64StringOrURL)
+
 const pickTimes = () => [
   asDate(pickAny(morning)),
   asDate(pickAny(noon)),
@@ -196,5 +199,6 @@ module.exports = {
   asBase64PngURL, 
   convertStreamToBase64,
   convertBlobToBase64,
+  ensureImageURL,
   sleep 
 }

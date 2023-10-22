@@ -149,7 +149,7 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
     const nextGrimoire = {...grimoire };
     if(!nextGrimoire.photos)
       nextGrimoire.photos = [];
-    nextGrimoire.photos[0] = asBase64PngURL(post.images[targetIndex]);
+    nextGrimoire.photos[0] = ensureImageURL(post.images[targetIndex]);
     setGrimoire(nextGrimoire);
     onSuccess(t('MSG.COVER_UPDATED'));
   };

@@ -2,7 +2,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/functions';
-import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where, onSnapshot } from "firebase/firestore";
 import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata } from 'firebase/storage';
 import { getAnalytics, isSupported } from "firebase/analytics";
 
@@ -108,3 +108,6 @@ export const estimateURL = async (path) => {
   const imageUrl = await getDownloadURL(storageRef);
   return imageUrl;
 }
+
+export const observe = (path, id, callback) => 
+  onSnapshot(doc(getFirestore(), path, id), (doc) => callback(doc.data()));
