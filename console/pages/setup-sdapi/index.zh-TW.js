@@ -5,6 +5,7 @@ import api from "libs/api-sd-remote";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { ensureImageURL } from "libs/utils";
 
 const SectionTitle = ({num, title}) =>
   <Row align="center"><Avatar squared size="md" text={num.toString()} /><Spacer x={1} /><Text h3>{title}</Text></Row>;
@@ -94,7 +95,7 @@ export default () => {
                     {image && 
                       <Card variant="bordered">
                         <Card.Image 
-                          src={`data:image/png;base64,${image}`}
+                          src={ensureImageURL(image)}
                           objectFit="cover"
                           />
                         <Card.Body>

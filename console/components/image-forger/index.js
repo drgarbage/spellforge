@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faCopy, faSliders } from '@fortawesome/free-solid-svg-icons';
 import { faCircleUp } from '@fortawesome/free-regular-svg-icons';
 import { PhotoCard } from 'components/photo-card';
-import { asBase64Image } from 'libs/utils';
+import { asBase64Image, ensureImageURL } from 'libs/utils';
 import { useUserContext } from 'context';
 import { useRouter } from 'next/router';
 import api from 'libs/api-sd-remote';
@@ -249,7 +249,7 @@ export default ({
                   isSelectable
                   viewport={{}}
                   key={index}
-                  image={item.startsWith('http') ? item : `data:image/png;base64,${item}`}
+                  image={ensureImageURL(item)}
                   actions={showOverlay ? [
                     allowShare && { icon: <TickSquare set="broken" color={isSelected(index) ? "yellow" : "white"} />, onAction: () => toggleSelection(index) },
                     allowCoverChange && { icon: <ArrowUpSquare set="broken" color="white" />, onAction: () => useAsCoverImage(index) },
@@ -267,7 +267,7 @@ export default ({
                 <PhotoCard 
                   title={progress + '%'}
                   loading={loading}
-                  image={!!live.current_image ? `data:image/png;base64,${live.current_image}` : '/images/cardface.png'}
+                  image={!!live.current_image ? ensureImageURL(live.current_image) : '/images/cardface.png'}
                   />
               </Grid>
               </Grid>

@@ -10,6 +10,7 @@ import Head from 'next/head';
 import { document } from '../../libs/api-firebase';
 import { PostGenerator } from '../../libs/post-generator';
 import { PhotoCard } from '../../components/photo-card';
+import { ensureImageURL } from 'libs/utils';
 
 const size = {
   width: 768,
@@ -51,8 +52,8 @@ export default function Series() {
     
     try{
       const imagesForShare = post?.images.filter((img, index) => selectedImages.includes(index));
-      const files = await Promise.all(imagesForShare.map(async (base64img, index) => {
-        const blob = await(await fetch(`data:image/png;base64,${base64img}`)).blob();
+      const files = await Promise.all(imagesForShare.map(async (image, index) => {
+        const blob = await(await fetch(ensureImageURL(image))).blob();
         const file = new File([blob], `photo-${index}.png`, { type: blob.type });
         return file;
       }));
@@ -147,7 +148,7 @@ export default function Series() {
         <meta property="og:title" content={post?.prompt || series?.name || 'Post Generator'} />
         <meta property="og:description" content={post?.comment || series?.name || 'Post Generator'} />
         {post?.images.length > 0 && post?.images.map((item,index) => 
-          <meta key={index} property="og:image" content={`data:image/png;base64,${item}`} />
+          <meta key={index} property="og:image" content={ensureImageURL(item)} />
         )}
         <meta property="og:image:width" content={size.width} />
         <meta property="og:image:height" content={size.height} />
@@ -207,7 +208,7 @@ export default function Series() {
                 key={index}
                 title={series?.name}
                 subtitle={series?.username}
-                image={`data:image/png;base64,${item}`}
+                image={ensureImageURL(item)}
                 checked={selectedImages.includes(index)}
                 onToggle={() => toggleImageSelection(index)}
                 />

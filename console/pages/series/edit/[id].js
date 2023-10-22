@@ -13,6 +13,7 @@ import InformationPanel from './panel-info';
 import moment from 'moment-timezone';
 import Head from 'next/head';
 import sdapi from 'libs/api-sd-remote';
+import { ensureImageURL } from 'libs/utils';
 
 const { txt2img } = sdapi('ai.printii.com');
 
@@ -208,7 +209,7 @@ const Editor = () => {
               width: 'calc((100vh - 100px) * 768 / 1024)',
               height: 'calc(100vh - 100px)',
             }}
-            images={[config?.photos[0] || '/images/cardface.png', ...((post.images || []).map(data => `data:image/png;base64,${data}`))].map(src => ({src}))}
+            images={[config?.photos[0] || '/images/cardface.png', ...((post.images || []).map(data => ensureImageURL(data)))].map(src => ({src}))}
             />
         </Grid>
         <Grid xs={12} sm={6}>

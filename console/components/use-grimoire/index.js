@@ -4,7 +4,7 @@ import { useUserContext } from "context";
 import { PostGenerator } from 'libs/post-generator';
 import { fetchWeather } from 'libs/api-weather';
 import { updatePngInfo } from "libs/api-storage";
-import { isEnglish } from "libs/utils";
+import { isEnglish, asBase64PngURL, ensureImageURL } from "libs/utils";
 import { request } from "libs/api-base";
 import moment from "moment-timezone";
 import api from 'libs/api-spellforge-aigc';
@@ -43,8 +43,8 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
     
     try{
       const imagesForShare = post?.images.filter((img, index) => selectedImages.includes(index));
-      const files = await Promise.all(imagesForShare.map(async (base64img, index) => {
-        const blob = await(await fetch(`data:image/png;base64,${base64img}`)).blob();
+      const files = await Promise.all(imagesForShare.map(async (image, index) => {
+        const blob = await(await fetch(ensureImageURL(image))).blob();
         const file = new File([blob], `photo-${index}.png`, { type: blob.type });
         return file;
       }));
@@ -149,7 +149,7 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
     const nextGrimoire = {...grimoire };
     if(!nextGrimoire.photos)
       nextGrimoire.photos = [];
-    nextGrimoire.photos[0] = `data:image/png;base64,${post.images[targetIndex]}`;
+    nextGrimoire.photos[0] = asBase64PngURL(post.images[targetIndex]);
     setGrimoire(nextGrimoire);
     onSuccess(t('MSG.COVER_UPDATED'));
   };

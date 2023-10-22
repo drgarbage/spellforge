@@ -24,6 +24,7 @@ import styles from 'styles/Home.module.css';
 import { useGrimoire } from 'components/use-grimoire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { ensureImageURL } from 'libs/utils';
 
 export const getStaticPaths = async () => {
   return {
@@ -249,7 +250,7 @@ const Editor = () => {
               carouselRef={(el) => (carouselRef.current = el)} 
               loading={loading}
               viewport={{}}
-              images={[grimoire?.photos[0] || '/images/cardface.png', ...((post.images || []).map(data => `data:image/png;base64,${data}`))].map(src => ({src}))}
+              images={[grimoire?.photos[0] || '/images/cardface.png', ...((post.images || []).map(data => ensureImageURL(data)))].map(src => ({src}))}
               height={isPortrait ? undefined : "calc(100vh - 100px)"}
               style={{backgroundColor: '#333'}}
               css={{backgroundColor: '#333'}}
