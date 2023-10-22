@@ -3,11 +3,12 @@ import { useTranslation } from "next-i18next";
 import { useUserContext } from "context";
 import { PostGenerator } from 'libs/post-generator';
 import { fetchWeather } from 'libs/api-weather';
-import moment from "moment-timezone";
-import api from 'libs/api-sd-remote';
 import { updatePngInfo } from "libs/api-storage";
 import { isEnglish } from "libs/utils";
 import { request } from "libs/api-base";
+import moment from "moment-timezone";
+import api from 'libs/api-spellforge-aigc';
+// import api from 'libs/api-sd-remote';
 
 export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = false, onError = () => {}, onSuccess = () => {}}) => {
   const { t } = useTranslation();
@@ -107,13 +108,15 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
       
       const { txt2img } = api(sdapi);
       const { images : rawImages, info } = await txt2img({prompt: `(${enCustomPrompt}) ${prompt}`, ...grimoire?.txt2imgOptions});
-      const images = allowMeta ? rawImages : rawImages.map(img => updatePngInfo(img, {parameters: ''}));
+      const images = allowMeta ? rawImages : rawImages.map(img => {
+        if(img.startsWith('http')) return img;
+        return updatePngInfo(img, {parameters: ''});
+      });
       const collection = post?.images.length > 0 ?
         [...post.images, ...images]:
         images;
-
       setPost(p => ({ ...p, images: collection }));
-      setLatestSeed(JSON.parse(info).seed);
+      // setLatestSeed(JSON.parse(info).seed);
     }catch(err){
       console.error(err);
       onError(err);

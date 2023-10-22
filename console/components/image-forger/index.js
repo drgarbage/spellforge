@@ -249,7 +249,7 @@ export default ({
                   isSelectable
                   viewport={{}}
                   key={index}
-                  image={`data:image/png;base64,${item}`}
+                  image={item.startsWith('http') ? item : `data:image/png;base64,${item}`}
                   actions={showOverlay ? [
                     allowShare && { icon: <TickSquare set="broken" color={isSelected(index) ? "yellow" : "white"} />, onAction: () => toggleSelection(index) },
                     allowCoverChange && { icon: <ArrowUpSquare set="broken" color="white" />, onAction: () => useAsCoverImage(index) },
