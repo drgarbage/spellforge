@@ -11,5 +11,6 @@ export default async (req, res) => {
   }
 
   res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
   res.status(200).send(Buffer.from(bytes));
 }
