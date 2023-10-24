@@ -81,17 +81,8 @@ export default ({
   const [ pngInfo, setPngInfo ] = useState(null);
   const [ showOverlay, setShowOverlay ] = useState(allowInfo);
   const [ closeRate, setCloseRate ] = useState(0);
-  const [ live, setLive ] = useState();
-  const [ stamp, setStamp ] = useState(0);
-  const progressRef = useRef(null);
   const bottomRef = useRef(null);
-  const progress = !!live ? Math.floor(live.progress * 100) : -1;
-  const eta = !!live ? Math.floor(live.eta_relative) : -1;
-
-  // const size = {
-  //   width: grimoire?.txt2imgOptions?.width || 512,
-  //   height: grimoire?.txt2imgOptions?.height || 512,
-  // };
+  const progress = loading ? loading.progress : -1;
 
   const info = (image) => {
     setPngInfo(image.startsWith('http') ? {} : getPngInfo(image));
@@ -137,30 +128,6 @@ export default ({
     setCloseRate(0);
     generate();
   }, [grimoire, generate, closeRate]);
-  useEffect(() => {
-    if(loading && !progressRef.current) {
-      progressRef.current = setInterval(() => {
-        setStamp(new Date().valueOf());
-      }, 3000);
-    }
-
-    if(!loading && !!progressRef.current) {
-      clearInterval(progressRef.current);
-      progressRef.current = null;
-    }
-
-    return () => {
-      clearInterval(progressRef.current);
-      progressRef.current = null;
-    }
-  }, [setStamp, setLive, loading]);
-  useEffect(()=>{
-    if(!loading) return;
-    api(sdapi)
-      .progress(true)
-      .then(setLive)
-      .catch(console.error);
-  }, [loading, stamp, setLive]);
 
   return (
     <>
@@ -231,45 +198,42 @@ export default ({
             }
 
             <Grid xs={12} gap={0} justify="center">
-            <Grid gap={0} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
-              <PhotoCard 
-                viewport={{}}
-                title={grimoire?.name}
-                subtitle={grimoire?.linked?.instagram?.username}
-                image={grimoire?.photos[0] || '/images/cardface.png'}
-                actions={showOverlay && grimoire?.photos[0] ? [{ icon: <InfoSquare set="broken" color="white" />, onAction: () => info(asBase64Image(grimoire?.photos[0])) }] : []}
-                />
-            </Grid>
+              <Grid gap={0} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
+                <PhotoCard 
+                  title={grimoire?.name}
+                  subtitle={grimoire?.linked?.instagram?.username}
+                  image={grimoire?.photos[0] || '/images/cardface.png'}
+                  actions={showOverlay && grimoire?.photos[0] ? [{ icon: <InfoSquare set="broken" color="white" />, onAction: () => info(asBase64Image(grimoire?.photos[0])) }] : []}
+                  />
+              </Grid>
             </Grid>
 
             {post?.images.map((item, index) => (
-              <Grid xs={12} gap={0} justify="center">
-              <Grid gap={0} key={index} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
-                <PhotoCard 
-                  isSelectable
-                  viewport={{}}
-                  key={index}
-                  image={ensureImageURL(item)}
-                  actions={showOverlay ? [
-                    allowShare && { icon: <TickSquare set="broken" color={isSelected(index) ? "yellow" : "white"} />, onAction: () => toggleSelection(index) },
-                    allowCoverChange && { icon: <ArrowUpSquare set="broken" color="white" />, onAction: () => useAsCoverImage(index) },
-                    { icon: <CloseSquare set="broken" color="white" />, onAction: () => deleteImage(index) },
-                    { icon: <InfoSquare set="broken" color="white" />, onAction: () => info(item) }
-                  ] : []}
-                  />
-              </Grid>
+              <Grid key={`preview-${index}`} xs={12} gap={0} justify="center">
+                <Grid gap={0} key={index} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
+                  <PhotoCard 
+                    isSelectable
+                    image={ensureImageURL(item)}
+                    actions={showOverlay ? [
+                      allowShare && { icon: <TickSquare set="broken" color={isSelected(index) ? "yellow" : "white"} />, onAction: () => toggleSelection(index) },
+                      allowCoverChange && { icon: <ArrowUpSquare set="broken" color="white" />, onAction: () => useAsCoverImage(index) },
+                      { icon: <CloseSquare set="broken" color="white" />, onAction: () => deleteImage(index) },
+                      { icon: <InfoSquare set="broken" color="white" />, onAction: () => info(item) }
+                    ] : []}
+                    />
+                </Grid>
               </Grid>
             ))}
 
-            { loading && !!live && live.progress > 0 &&
-              <Grid xs={12} gap={0} justify="center">
-              <Grid gap={0} className={`${styles.cardEnter}`} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
-                <PhotoCard 
-                  title={progress + '%'}
-                  loading={loading}
-                  image={!!live.current_image ? ensureImageURL(live.current_image) : '/images/cardface.png'}
-                  />
-              </Grid>
+            { loading && loading.progress > 0 &&
+              <Grid key="preview" xs={12} gap={0} justify="center">
+                <Grid gap={0} className={`${styles.cardEnter}`} xs={12} sm={6} justify="center" css={{overflow: 'visible'}}>
+                  <PhotoCard 
+                    title={progress + '%'}
+                    loading={loading}
+                    image={!!loading.progressImage ? ensureImageURL(loading.progressImage) : '/images/cardface.png'}
+                    />
+                </Grid>
               </Grid>
             }
 

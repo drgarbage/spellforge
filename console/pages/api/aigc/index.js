@@ -18,6 +18,7 @@ export default async (req, res) => {
   let responsed = false;
   const taskId = customAlphabet('1234567890abcdef', 6)();
   const task = {
+    mode: 'await', // pass | await
     ...req.body,
     id: taskId,
     reportProgress: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/progress`,
@@ -28,13 +29,18 @@ export default async (req, res) => {
     createAt: new Date(),
   };
 
+  const shouldWait = task.mode === 'await';
+
   await save('tasks-aigc', taskId, {...task, params: { ...task.params, init_images: [], alwayson_scripts: {} }});
-  const unsubscribe = observe('tasks-aigc', taskId, (doc) => {
-    if(responsed) return;
-    if(!doc.result) return;
-    responsed = true;
-    res.status(200).json(doc);
-  });
+
+  // hint: only subscribe in await mode
+  const unsubscribe = shouldWait ?
+    observe('tasks-aigc', taskId, (doc) => {
+      if(responsed) return;
+      if(!doc.result) return;
+      responsed = true;
+      res.status(200).json(doc);
+    }): () => {};
 
   const queue = 'generation';
   const conn = await amqplib.connect(AMQP_HOST);
@@ -48,16 +54,20 @@ export default async (req, res) => {
   channel.close();
   conn.close();
 
-  setTimeout(async () => {
-    if(responsed) return;
-    unsubscribe();
-    let latestTask = task;
-    try{
-      latestTask = await document('tasks-aigc', taskId);
-    }catch(err){
-      console.error(err.message);
-    }finally{
-      res.status(200).json(latestTask);
-    }
-  }, 18000);
+  if(shouldWait)
+    // hint: only subscribe in await mode
+    setTimeout(async () => {
+      if(responsed) return;
+      unsubscribe();
+      let latestTask = task;
+      try{
+        latestTask = await document('tasks-aigc', taskId);
+      }catch(err){
+        console.error(err.message);
+      }finally{
+        res.status(200).json(latestTask);
+      }
+    }, 18000);
+  else
+    res.status(200).json(task);
 }

@@ -3,8 +3,9 @@ const axios = require('axios');
 const request = async (
     url, { method = 'GET', headers = {}, body = undefined }
   ) => {
+  const isRelativePath = url.indexOf('://') === -1;
   const protocol = typeof(window) !== 'undefined' && window.location ? window.location.protocol : 'https:';
-  const dest = `${protocol}//${url.replace('http://', '').replace('https://', '')}`;
+  const dest = isRelativePath ? url : `${protocol}//${url.replace('http://', '').replace('https://', '')}`;
 
   const response = await axios({
     timeout: 300000,

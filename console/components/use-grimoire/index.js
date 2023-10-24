@@ -15,7 +15,7 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
   const { preferences } = useUserContext();
   const { openai: apiKey, sdapi } = preferences;
   const [ grimoire, setGrimoire ] = useState(initialGrimoire);
-  const [ loading, setLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(false); // { progress: 0, progressImage: null }
   const [ post, setPost ] = useState({ prompt: '', comment: '', background: null, images: [] });
   const [ auto, setAuto ] = useState(false);
   const [ stamp, setStamp ] = useState(0);
@@ -95,7 +95,7 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
 
   const generateImage = async (p = undefined) => {
     try{
-      setLoading(true);
+      setLoading({progress: 0, progressImage: null});
 
       const prompt = p || post?.prompt;
 
@@ -107,7 +107,17 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
           .catch(() => customPrompt);
       
       const { txt2img } = api(sdapi);
-      const { images : rawImages, info } = await txt2img({prompt: `(${enCustomPrompt}) ${prompt}`, ...grimoire?.txt2imgOptions});
+      const { images : rawImages, info } = await txt2img(
+        {
+          prompt: `(${enCustomPrompt}) ${prompt}`, 
+          ...grimoire?.txt2imgOptions
+        },
+        {
+          onProgress: (progress, progressImage) =>
+            setLoading({progress, progressImage})
+        }
+      );
+
       const images = allowMeta ? rawImages : rawImages.map(img => {
         if(img.startsWith('http')) return img;
         return updatePngInfo(img, {parameters: ''});

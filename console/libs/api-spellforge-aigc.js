@@ -1,5 +1,5 @@
-const { request } = require("./api-base");
-const { hostPart } = require("./utils");
+import axios from "axios";
+import { request } from "./api-base";
 
 const BASE_SIZE = 768;
 const negative_prompt = "easynegative, extra fingers, paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, (outdoor:1.6), manboobs, backlight,(ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331), mutated hands, (poorly drawn hands:1.331), blurry, (bad anatomy:1.21), (bad proportions:1.331), extra limbs, (disfigured:1.331), (more than 2 nipples:1.331), (missing arms:1.331), (extra legs:1.331), (fused fingers:1.61051), (too many fingers:1.61051), (unclear eyes:1.331), bad hands, missing fingers, extra digit, (futa:1.1), bad body, NG_DeepNegative_V1_75T,pubic hair, glans, (lines:1.5), (stroke:1.5) (umbrella:1.3)";
@@ -35,42 +35,19 @@ const IMG2IMG_DEFAULTS = {
   width: 768,
   height: 768,
   sampler_index: 'DPM++ SDE Karras',
-
-  // resize_mode: 0,
-  // image_cfg_scale: 2,
-  // inpainting_fill: 0,
-  // inpaint_full_res: true,
-  // inpaint_full_res_padding: 0,
-  // inpainting_mask_invert: 0,
-  // initial_noise_multiplier: 0,
-  // subseed: -1,
-  // subseed_strength: 0,
-  // seed_resize_from_h: -1,
-  // seed_resize_from_w: -1,
-  // sampler_name: "",
-  // batch_size: 1,
-  // n_iter: 1,
-  // steps: 50,
-  // restore_faces: false,
-  // tiling: false,
-  // eta: 0,
-  // s_churn: 0,
-  // s_tmax: 0,
-  // s_tmin: 0,
-  // s_noise: 1,
-  // override_settings: {},
-  // override_settings_restore_afterwards: true,
-  // include_init_images: false
 }
 
-const fixSampler = (params) => {
-  const output = {...params};
-  if(!output.sampler_name && !!output.sampler_index) {
-    output.sampler_name = params.sampler_index;
-    delete output.sampler_index;
+const fetchAsBase64Image = async (url) => {
+  try {
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+    return base64;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
-  return output;
 }
+  
 
 const waitForResult = (checker, options) => {
   const { timeout = 20000, interval = 1000} = options || {};
@@ -93,24 +70,31 @@ const waitForResult = (checker, options) => {
 }
 
 const sdapi = (h) => {
-
-  const protocol = typeof(window) !== 'undefined' && window.location ? window.location.protocol : 'https:';
-  const host = hostPart('https:' + h.replace('http:', '').replace('https:',''));
   
-  const task = async (api, params, options = undefined) => {
+  const task = async (api, params, options = {}) => {
     const { id: taskId, progress, result } = 
       await request(
-        `${host}/api/aigc`, 
-        { method: 'POST', body: { api, params: fixSampler(params) } }
+        `/api/aigc`,
+        { method: 'POST', body: { api, params, mode: 'pass' } }
       );
         
     if(progress == 1)
       return result;
     else {
       return waitForResult(async () => {
-        const { progress, result } = await request(`${host}/api/aigc/${taskId}/result`, {});
+        const { progress, progressImage, result } = 
+          await request(`/api/aigc/${taskId}/result`, {});
+
+        if(progressImage && !!options.onProgress){
+          const p = Math.round(progress * 100) / 100;
+          const image = await fetchAsBase64Image(`/api/ipfs/${progressImage}`);
+          options.onProgress(p, image);
+        }
+
         if(progress < 1) return false;
-        return result;
+
+        const images = await Promise.all(result.images.map(img => fetchAsBase64Image(`/api/ipfs/${img}`)));
+        return { images };
       }, options);
     }
   };
@@ -120,15 +104,11 @@ const sdapi = (h) => {
     TXT2IMG_DEFAULTS,
     IMG2IMG_DEFAULTS,
     
-    txt2img: async (body, options = undefined) => {
-      const { images } = await task('txt2img', {...TXT2IMG_DEFAULTS, ...body}, options);
-      return { images: images.map(cid => `${protocol}//${host}/api/ipfs/${cid}`) };
-    },
+    txt2img: async (body, options) => 
+      await task('txt2img', {...TXT2IMG_DEFAULTS, ...body}, options),
     
-    img2img: async (body, options = undefined) => {
-      const { images } = await task('img2img', {...IMG2IMG_DEFAULTS, ...body}, options);
-      return { images: images.map(cid => `${protocol}//${host}/api/ipfs/${cid}`) };
-    },
+    img2img: async (body, options) => 
+      await task('img2img', {...IMG2IMG_DEFAULTS, ...body}, options),
     
     upscale: (body) =>
       request(`${host}/sdapi/v1/extra-single-image`, {method: 'POST', body}),

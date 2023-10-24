@@ -5,12 +5,16 @@ export default async (req, res) => {
   const {id : taskId} = req.query;
 
   if(!!req.body && !!req.body.result) {
-    const { result } = req.body;
-    await update('tasks-aigc', taskId, { progress: 1, result, completeAt: new Date() });
+    const { result, error } = req.body;
+    const data = !!error ?
+      { progress: 1, progressImage: null, result, completeAt: new Date(), error }:
+      { progress: 1, progressImage: null, result, completeAt: new Date() }
+    
+    await update('tasks-aigc', taskId, data);
   }
 
-  const { progress,  progressImage, result } = 
+  const task = 
     await document('tasks-aigc', taskId);
     
-  res.status(200).json({ progress,  progressImage, result });
+  res.status(200).json(task);
 }
