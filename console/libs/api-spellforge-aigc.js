@@ -86,7 +86,7 @@ const sdapi = (h) => {
           await request(`/api/aigc/${taskId}/result`, {});
 
         if(progressImage && !!options.onProgress){
-          const p = Math.round(progress * 100) / 100;
+          const p = Math.round(progress * 100);
           const image = await fetchAsBase64Image(`/api/ipfs/${progressImage}`);
           options.onProgress(p, image);
         }
