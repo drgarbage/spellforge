@@ -111,25 +111,25 @@ const sdapi = (h) => {
       await task('img2img', {...IMG2IMG_DEFAULTS, ...body}, options),
     
     upscale: (body) =>
-      request(`${host}/sdapi/v1/extra-single-image`, {method: 'POST', body}),
+      request(`/sdapi/v1/extra-single-image`, {method: 'POST', body}),
     
     samplers: () =>
-      request(`${host}/sdapi/v1/samplers`, {}),
+      request(`/sdapi/v1/samplers`, {}),
     
     upscalers: () =>
-      request(`${host}/sdapi/v1/upscalers`, {}),
+      request(`/sdapi/v1/upscalers`, {}),
     
     sdmodels: () =>
-      request(`${host}/sdapi/v1/sd-models`, {}),
+      request(`/sdapi/v1/sd-models`, {}),
 
     progress: (preview = false) =>
-      request(`${host}/sdapi/v1/progress?skip_current_image=${!preview}`, {}),
+      request(`/sdapi/v1/progress?skip_current_image=${!preview}`, {}),
 
     interrogate: (image, model = "clip") =>
-      request(`${host}/sdapi/v1/interrogate`, {method: 'POST', body: {image, model}}),
+      request(`/sdapi/v1/interrogate`, {method: 'POST', body: {image, model}}),
 
     rembg: (image) =>
-      request(`${host}/sdapi/v1/rembg/remove_background`, {method: 'POST', body: { image }}),
+      request(`/sdapi/v1/rembg/remove_background`, {method: 'POST', body: { image }}),
   
   };
 };
