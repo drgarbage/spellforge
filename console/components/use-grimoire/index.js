@@ -102,14 +102,14 @@ export const useGrimoire = ({grimoire : initialGrimoire = null, allowMeta = fals
       if(!prompt) throw new Error(t('ERR.PROMPT_FORMAT_INCORRECT'));
       if(!sdapi) throw new Error(t('ERR.SDAPI_HOST_NOT_SET'));
 
-      const enCustomPrompt = isEnglish(customPrompt) ? customPrompt :
+      const enCustomPrompt = customPrompt.length > 0 && isEnglish(customPrompt) ? customPrompt :
         await request(`${window.location.host}/api/en`, { method: 'POST', body: customPrompt})
           .catch(() => customPrompt);
       
       const { txt2img } = api(sdapi);
       const { images : rawImages, info } = await txt2img(
         {
-          prompt: `(${enCustomPrompt}) ${prompt}`, 
+          prompt: enCustomPrompt.length > 0 ? `(${enCustomPrompt}) ${prompt}`: prompt, 
           ...grimoire?.txt2imgOptions
         },
         {
