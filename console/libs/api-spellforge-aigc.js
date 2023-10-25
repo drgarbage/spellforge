@@ -50,7 +50,7 @@ const fetchAsBase64Image = async (url) => {
   
 
 const waitForResult = (checker, options) => {
-  const { timeout = 20000, interval = 1000} = options || {};
+  const { timeout = 1800000, interval = 1000} = options || {};
   return new Promise((resolve, reject) => {
     const begin = new Date().getTime();
     const hdl = setInterval(async () => {
@@ -110,26 +110,26 @@ const sdapi = (h) => {
     img2img: async (body, options) => 
       await task('img2img', {...IMG2IMG_DEFAULTS, ...body}, options),
     
-    upscale: (body) =>
-      request(`/sdapi/v1/extra-single-image`, {method: 'POST', body}),
+    // upscale: (body) =>
+    //   request(`/sdapi/v1/extra-single-image`, {method: 'POST', body}),
     
     samplers: () =>
-      request(`/sdapi/v1/samplers`, {}),
+      request(`/api/aigc/samplers`, {}),
     
     upscalers: () =>
-      request(`/sdapi/v1/upscalers`, {}),
+      request(`/api/aigc/upscalers`, {}),
     
     sdmodels: () =>
-      request(`/sdapi/v1/sd-models`, {}),
+      request(`/api/aigc/sd-models`, {}),
 
-    progress: (preview = false) =>
-      request(`/sdapi/v1/progress?skip_current_image=${!preview}`, {}),
+    // progress: (preview = false) =>
+    //   request(`/sdapi/v1/progress?skip_current_image=${!preview}`, {}),
 
-    interrogate: (image, model = "clip") =>
-      request(`/sdapi/v1/interrogate`, {method: 'POST', body: {image, model}}),
+    // interrogate: (image, model = "clip") =>
+    //   request(`/sdapi/v1/interrogate`, {method: 'POST', body: {image, model}}),
 
     rembg: (image) =>
-      request(`/sdapi/v1/rembg/remove_background`, {method: 'POST', body: { image }}),
+      request(`/api/aigc/rembg`, {method: 'POST', body: { image }}),
   
   };
 };

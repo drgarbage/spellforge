@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faRandom, faRecycle } from '@fortawesome/free-solid-svg-icons';
 import { Box } from 'components/box';
 import { useUserContext } from 'context';
-import sdapi from 'libs/api-sd-remote';
+import sdapi from 'libs/api-spellforge-aigc';
+// import sdapi from 'libs/api-sd-remote';
 
 const ModelOptions = ({label, value, onChange}) => {
   const { t } = useTranslation();
