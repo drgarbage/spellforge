@@ -78,14 +78,15 @@ export const documentMatches = async (path, matches) => {
   return output;
 }
 
-export const updateWithCondition = (path, id, data, condition) => {
+export const updateWithCondition = async (path, id, data, condition) => {
   const firestore = getFirestore();
   return runTransaction(firestore, async (tran) => {
-    const doc = await getDoc(doc(firestore, path, id));
-    const currentData = doc.data();
+    const docRef = doc(firestore, path, id);
+    const snapshot = await getDoc(docRef);
+    const currentData = snapshot.data();
     const shouldContinue = await condition(currentData);
     if(shouldContinue)
-      tran.update(doc, data);
+      tran.update(docRef, data);
   });
 }
 

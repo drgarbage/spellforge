@@ -40,8 +40,8 @@ export default () => {
   });
 
   const image = 
-    resultImage || 
     loading?.progressImage ||
+    resultImage || 
     source || 
     '/images/cardface.png';
 
@@ -54,7 +54,6 @@ export default () => {
   };
 
   const generate = () => {
-    setResultImage(null);
     setLoading({progress: 0, progressImage: null, result: null});
     const onResult = (result) => {
       if(result?.images?.[0])
