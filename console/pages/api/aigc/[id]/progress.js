@@ -1,4 +1,4 @@
-import { update } from "libs/api-firebase";
+import { updateWithCondition } from "libs/api-firebase";
 import { document } from "libs/api-firebase";
 
 export default async (req, res) => {
@@ -6,7 +6,11 @@ export default async (req, res) => {
 
   if(!!req.body && !!req.body.progress) {
     const { progress, progressImage } = req.body;
-    await update('tasks-aigc', taskId, { progress, progressImage});
+    const data = { progress, progressImage};
+    await updateWithCondition(
+      'tasks-aigc', taskId, data, 
+      (existedData) => existedData.progress < progress
+    );
   }
 
   const { progress,  progressImage } = 

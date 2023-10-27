@@ -2,7 +2,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/functions';
-import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where, onSnapshot, runTransaction } from "firebase/firestore";
 import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata } from 'firebase/storage';
 import { getAnalytics, isSupported } from "firebase/analytics";
 
@@ -76,6 +76,17 @@ export const documentMatches = async (path, matches) => {
   const output = [];
   snapshot.forEach(doc => output.push(({id:doc.id, ...doc.data()})));
   return output;
+}
+
+export const updateWithCondition = (path, id, data, condition) => {
+  const firestore = getFirestore();
+  return runTransaction(firestore, async (tran) => {
+    const doc = await getDoc(doc(firestore, path, id));
+    const currentData = doc.data();
+    const shouldContinue = await condition(currentData);
+    if(shouldContinue)
+      tran.update(doc, data);
+  });
 }
 
 export const update = (path, id, data) =>

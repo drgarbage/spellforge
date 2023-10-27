@@ -43,6 +43,7 @@
     "react-multi-carousel": "^2.8.3",
     "react-range": "^1.8.14",
     "react-swipeable": "^7.0.0",
+    "spellforgejs": "https://github.com/drgarbage/spellforgejs.git",
     "tiny-uid": "^1.1.2",
     "tls": "^0.0.1"
   },
