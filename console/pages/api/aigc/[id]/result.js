@@ -7,8 +7,8 @@ export default async (req, res) => {
   if(!!req.body && !!req.body.result) {
     const { result, error } = req.body;
     const data = !!error ?
-      { progress: 1, progressImage: null, result, completeAt: new Date(), error }:
-      { progress: 1, progressImage: null, result, completeAt: new Date() }
+      { progress: 1, result, completeAt: new Date(), error }:
+      { progress: 1, result, completeAt: new Date() }
     
     await update('tasks-aigc', taskId, data);
   }
