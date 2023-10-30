@@ -12,7 +12,7 @@ import { Slider } from "components/slider";
 import Webcam from "react-webcam";
 import Head from "next/head";
 import spellforge from "spellforgejs";
-import styles from 'styles/Home.module.css';
+import { cloneDeep } from "lodash";
 
 const api = spellforge({apiKey: '_', credential: '_'});
 const percentage = (value) => Math.round(value * 100);
@@ -57,18 +57,18 @@ export default () => {
   });
   const [loading, setLoading] = useState(null);
   const [source, setSource] = useState(null);
-  const [sourceInfo, setSourceInfo] = useState({});
+  const [sourceInfo, setSourceInfo] = useState(null);
   const [resultImage, setResultImage] = useState(null);
   const [params, setParams] = useState({
     prompt: '1girl',
     size: '512x512',
     n: 1,
     advanceOptions: {
-      negative_prompt: '(futa:2), (worse quality:2),(bad quality:2),(normal quality:2), (ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331),(bad anatomy:1.21), (bad proportions:1.331), easynegative, paintings, sketches, lowres, monochrome, grayscale, backlight, extra digit, NG_DeepNegative_V1_75T',
+      negative_prompt: '(futa:2), (worse quality:2), (bad quality:2), (normal quality:2), (ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331),(bad anatomy:1.21), (bad proportions:1.331), easynegative, paintings, sketches, lowres, monochrome, grayscale, backlight, extra digit, NG_DeepNegative_V1_75T',
       steps: 24,
       cfg_scale: 7,
       denoising_strength: 0.4,
-      sampler_name: 'UniPC',
+      sampler_name: 'Euler a',
 
       // txt2img only
       enable_hr: true,
@@ -76,9 +76,9 @@ export default () => {
       hr_upscaler: "ESRGAN_4x",
       hr_second_pass_steps: 0,
 
-      override_settings: {
-        sd_model_checkpoint: "cf64507cef"
-      }
+      // override_settings: {
+      //   sd_model_checkpoint: "cf64507cef"
+      // }
     }
   });
   const [showProps, setShowProps] = useState(false);
@@ -93,11 +93,6 @@ export default () => {
     resultImage || 
     source || 
     '/images/cardface.png';
-
-  
-  const selectedModelHash = params?.advanceOptions?.override_settings?.sd_model_checkpoint ?? undefined;
-  const mappedModel = selectedModelHash && infos?.sdmodels.find((data) => data.key === selectedModelHash)?.name;
-  const selectedModel = mappedModel ?? selectedModelHash ?? '未指定';
 
   const opt = (changes) => setParams({...params, ...changes});
   const adv = (changes) => opt({advanceOptions: {...params?.advanceOptions, ...changes}});
@@ -116,11 +111,11 @@ export default () => {
     setLoading({progress: 0, progressImage: null, result: null});
 
     const timeout = 1800000;
-    const translate = async (p) => {
-      const { prompt } = p;
-      if(isEnglish(prompt)) return p;
+    const translate = async (org) => {
+      const { prompt } = cloneDeep(org);
+      if(isEnglish(prompt)) return {...org};
       const { text } = await request('/api/en', {method: 'POST', body: { text: prompt }});
-      return {...p, prompt: text};
+      return {...org, prompt: text};
     }
 
     try {
@@ -145,7 +140,7 @@ export default () => {
 
       const result = source ?
         await api.img2img({...p, image: source}, { onProgress, timeout }) :
-        await api.txt2img(p, { onProgress, timeout});
+        await api.txt2img({...p}, { onProgress, timeout});
 
       if(result?.images?.[0]) 
         setResultImage(result?.images?.[0] || null);
@@ -177,6 +172,7 @@ export default () => {
 
   const onClear = async (e) => {
     setSource(null);
+    setSourceInfo(null);
     setResultImage(null);
   }
 
@@ -396,31 +392,41 @@ export default () => {
           }}>
           <Card.Body>
             <Col>
-              <Row align="center">
-                <Text>繪圖模型</Text>
-                <Spacer x={1} />
-                <Dropdown>
-                  <Dropdown.Button auto light css={{padding:0}}>
-                    {selectedModel}
-                  </Dropdown.Button>
-                  <Dropdown.Menu 
-                    onAction={(key) => ovr({sd_model_checkpoint: key})} 
-                    items={infos.sdmodels}>
-                      {(item) => (
-                        <Dropdown.Item 
-                          key={item.key}>
-                          {item.name}
-                        </Dropdown.Item>
-                      )}
-                    </Dropdown.Menu>
-                </Dropdown>
-              </Row>
+              <select 
+                style={{flex:'1,1', width: '100%', height: '44px', overflow: 'clip', borderRadius: 8}} 
+                value={params?.advanceOptions?.override_settings?.sd_model_checkpoint || null}
+                onChange={e => ovr({sd_model_checkpoint: e.target.value})}
+                >
+                <option value={null}>未指定</option>
+                {infos.sdmodels.map(item => 
+                  <option value={item.key}>{item.name}</option>
+                )}
+              </select>
+              <Spacer y={1} />
+              <select 
+                style={{flex:'1,1', width: '100%', height: '44px', overflow: 'clip', borderRadius: 8}} 
+                value={params?.advanceOptions?.sampler_name || null}
+                onChange={e => adv({sampler_name: e.target.value})}
+                >
+                <option value={null}>未指定</option>
+                {infos.samplers.map(item => 
+                  <option value={item.key}>{item.name}</option>
+                )}
+              </select>
+              <Spacer y={1} />
+              <Slider label="繪圖次數" 
+                step={1}
+                min={1}
+                max={150}
+                values={[params?.advanceOptions?.steps || 20]}
+                onChange={([value]) => adv({steps:value})} 
+                />
               <Spacer y={1} />
               <Slider label="細節程度" 
                 step={0.1}
                 min={1}
                 max={30}
-                values={[params.advanceOptions.cfg_scale || 7]}
+                values={[params?.advanceOptions?.cfg_scale || 7]}
                 onChange={([value]) => adv({cfg_scale:value})} 
                 />
               <Spacer y={1} />
@@ -428,7 +434,7 @@ export default () => {
                 step={0.05}
                 min={0}
                 max={1}
-                values={[params.advanceOptions.denoising_strength || 0.75]} 
+                values={[params?.advanceOptions?.denoising_strength || 0.75]} 
                 onChange={([value]) => adv({denoising_strength:value})} 
                 />
               <Spacer y={1} />

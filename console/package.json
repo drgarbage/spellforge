@@ -25,6 +25,7 @@
     "idb": "^7.1.1",
     "instagram-web-api": "^2.2.2",
     "kubo-rpc-client": "^3.0.1",
+    "lodash": "^4.17.21",
     "meta-png": "^1.0.6",
     "moment-timezone": "^0.5.42",
     "nanoid": "^4.0.2",
