@@ -1,4 +1,4 @@
-import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer } from "@nextui-org/react";
+import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer, Dropdown } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faCameraRetro, faX, faRotate } from '@fortawesome/free-solid-svg-icons';
@@ -6,10 +6,13 @@ import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { isEnglish } from "libs/utils";
 import { request } from "libs/api-base";
 import { useTranslation } from "react-i18next";
+import { useWindowDimensions } from "components/use-window-dimensions";
+import { infoFromBase64URL } from 'spellforgejs/lib/utils/image';
+import { Slider } from "components/slider";
 import Webcam from "react-webcam";
 import Head from "next/head";
 import spellforge from "spellforgejs";
-import { useWindowDimensions } from "components/use-window-dimensions";
+import styles from 'styles/Home.module.css';
 
 const api = spellforge({apiKey: '_', credential: '_'});
 const percentage = (value) => Math.round(value * 100);
@@ -54,6 +57,7 @@ export default () => {
   });
   const [loading, setLoading] = useState(null);
   const [source, setSource] = useState(null);
+  const [sourceInfo, setSourceInfo] = useState({});
   const [resultImage, setResultImage] = useState(null);
   const [params, setParams] = useState({
     prompt: '1girl',
@@ -72,18 +76,17 @@ export default () => {
       hr_upscaler: "ESRGAN_4x",
       hr_second_pass_steps: 0,
 
-      // override_settings: {
-      //   sd_model_checkpoint: "cf64507cef"
-      // }
+      override_settings: {
+        sd_model_checkpoint: "cf64507cef"
+      }
     }
   });
   const [showProps, setShowProps] = useState(false);
   const [showImgOptions, setShowImgOptions] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const [mediaConstrain, setMediaConstrain] = useState({
-    facingMode: 'environment', // 'user', 'environment
-  });
-  const { width, height } = useWindowDimensions(typeof window !== 'undefined' ? window : null);
+  const [facingMode, setFacingMode] = useState('environment');
+  const { width, height, mediaConstrain, orientation } = 
+    useWindowDimensions(typeof window !== 'undefined' ? window : null);
 
   const image = 
     loading?.progressImage ||
@@ -91,9 +94,14 @@ export default () => {
     source || 
     '/images/cardface.png';
 
+  
+  const selectedModelHash = params?.advanceOptions?.override_settings?.sd_model_checkpoint ?? undefined;
+  const mappedModel = selectedModelHash && infos?.sdmodels.find((data) => data.key === selectedModelHash)?.name;
+  const selectedModel = mappedModel ?? selectedModelHash ?? '未指定';
+
   const opt = (changes) => setParams({...params, ...changes});
-  const adv = (changes) => opt({advanceOptions: {...params.advanceOptions, ...changes}});
-  const ovr = (changes) => adv({override_settings: {...params.advanceOptions.override_settings, ...changes}});
+  const adv = (changes) => opt({advanceOptions: {...params?.advanceOptions, ...changes}});
+  const ovr = (changes) => adv({override_settings: {...params?.advanceOptions?.override_settings, ...changes}});
 
   const onProgress = (progress, progressImage) => {
     if(progress === 1) return;
@@ -123,7 +131,16 @@ export default () => {
         delete p.advanceOptions.hr_scale;
         delete p.advanceOptions.hr_upscaler;
         delete p.advanceOptions.hr_second_pass_steps;
-        p.resize = 'contain';
+        p.resize = 'cover';
+      }
+
+      if(source && sourceInfo) {
+        const targetWidth = sourceInfo['Image Width'].value;
+        const targetHeight = sourceInfo['Image Height'].value;
+        const max = Math.max(targetWidth, targetHeight);
+        const rate = 1024 / max;
+        p.size = `${parseInt(targetWidth * rate)}x${parseInt(targetHeight * rate)}`;
+        p.resize = 'fill';
       }
 
       const result = source ?
@@ -144,16 +161,48 @@ export default () => {
 
   const onSelectImage = async (e) => {
     const [file] = e.target.files;
-    const img = await bytes2Base64URL(file);
-    setSource(img);
+    const base64URL = await bytes2Base64URL(file);
+    const info = await infoFromBase64URL(base64URL);
+    setSourceInfo(info);
+    setSource(base64URL);
+    setResultImage(null);
+  }
+
+  const onCameraShot = async (base64URL) => {
+    const info = await infoFromBase64URL(base64URL);
+    setSourceInfo(info);
+    setSource(base64URL);
+    setResultImage(null);
+  }
+
+  const onClear = async (e) => {
+    setSource(null);
+    setResultImage(null);
   }
 
   useEffect(()=>{
     api
       .infos()
-      .then(setInfos)
+      .then(reference => {
+
+        const sdmodels = reference.sdmodels
+          .map(item => ({key: item.hash, name: item.model_name}));
+
+        const samplers = reference.samplers
+          .map(item => ({key: item.name, name: item.name}));
+
+        const upscalers = reference.upscalers
+          .map(item => ({key: item.name, name: item.name}));
+
+        setInfos({
+          sdmodels,
+          samplers,
+          upscalers
+        });
+      })
       .catch(console.error);
   }, []);
+
 
   return (
     <Grid.Container gap={1}>
@@ -166,11 +215,14 @@ export default () => {
 
       <style jsx global>
         {`
-          body {
+          html, body {
             overflow: hidden;
+            height: 100%;
           }
         `}
       </style>
+
+      {/** Hidden Input */}
 
       <input 
         id="picker" 
@@ -188,11 +240,7 @@ export default () => {
           width="100%"
           height="100%"
           screenshotFormat="image/png"
-          videoConstraints={{
-            ...mediaConstrain,
-            width,
-            height,
-          }}
+          videoConstraints={{...mediaConstrain, facingMode}}
           >
             {({ getScreenshot }) => (
               <Row align="center" justify="center" css={{position: "absolute", zIndex: 3, bottom: 20}}>
@@ -208,8 +256,8 @@ export default () => {
                   icon={faCameraRetro} 
                   radius={84}
                   onPress={()=>{
-                    setSource(getScreenshot());
                     setShowCamera(false);
+                    onCameraShot(getScreenshot());
                   }}
                   />
                 <Spacer x={1} />
@@ -217,10 +265,10 @@ export default () => {
                   icon={faRotate} 
                   radius={64}
                   onPress={()=>{
-                    setMediaConstrain({
-                      ...mediaConstrain, 
-                      facingMode: mediaConstrain.facingMode === 'user' ? 'environment' : 'user'
-                    });
+                    setFacingMode(
+                      facingMode === 'user' ? 
+                        'environment' : 'user'
+                    );
                   }}
                   />
 
@@ -272,7 +320,7 @@ export default () => {
                         <IconButton
                           onPress={() => {
                             setShowImgOptions(false);
-                            setSource(null);
+                            onClear();
                           }}
                           icon={faX}
                           label="清除選取"
@@ -322,35 +370,83 @@ export default () => {
         </Grid>
       }
 
-      <Row 
-        onClick={() => setShowProps(false) }
-        css={{
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: showProps ? 'inherit' : 'none', 
-          position: 'absolute', 
-          width: '100vw',
-          height: '100vh',
-          zIndex: 2,
-        }} />
+      {/** Overlay */}
 
-      <Card css={{
-          display: showProps ? 'inherit' : 'none', 
-          position: 'absolute',
-          bottom: 0,
-          zIndex: 3
-        }}>
-        <Card.Body>
-          <Textarea
-            fullWidth
-            multiple
-            maxRows={20}
-            size="sm"
-            aria-label="prompt"
-            initialValue={params.prompt} 
-            onChange={e => opt({prompt: e.target.value})} 
-            />
-        </Card.Body>
-      </Card>
+      { showProps &&
+        <Row 
+          onClick={() => setShowProps(false) }
+          css={{
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            position: 'absolute', 
+            width: '100vw',
+            height: '100vh',
+            zIndex: 2,
+          }} 
+          />
+      }
+
+      { showProps &&
+        <Card 
+          // className={`${styles.cardAnimation}`}
+          css={{
+            "&": { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
+            position: 'absolute',
+            bottom: 0,
+            zIndex: 3
+          }}>
+          <Card.Body>
+            <Col>
+              <Row align="center">
+                <Text>繪圖模型</Text>
+                <Spacer x={1} />
+                <Dropdown>
+                  <Dropdown.Button auto light css={{padding:0}}>
+                    {selectedModel}
+                  </Dropdown.Button>
+                  <Dropdown.Menu 
+                    onAction={(key) => ovr({sd_model_checkpoint: key})} 
+                    items={infos.sdmodels}>
+                      {(item) => (
+                        <Dropdown.Item 
+                          key={item.key}>
+                          {item.name}
+                        </Dropdown.Item>
+                      )}
+                    </Dropdown.Menu>
+                </Dropdown>
+              </Row>
+              <Spacer y={1} />
+              <Slider label="細節程度" 
+                step={0.1}
+                min={1}
+                max={30}
+                values={[params.advanceOptions.cfg_scale || 7]}
+                onChange={([value]) => adv({cfg_scale:value})} 
+                />
+              <Spacer y={1} />
+              <Slider label="原圖變化量" 
+                step={0.05}
+                min={0}
+                max={1}
+                values={[params.advanceOptions.denoising_strength || 0.75]} 
+                onChange={([value]) => adv({denoising_strength:value})} 
+                />
+              <Spacer y={1} />
+              <Textarea
+                fullWidth
+                multiple
+                autoFocus
+                maxRows={20}
+                size="sm"
+                aria-label="prompt"
+                initialValue={params.prompt} 
+                onChange={e => opt({prompt: e.target.value})} 
+                />
+            </Col>
+          </Card.Body>
+        </Card>
+      }
+
     </Grid.Container>
   );
 }
