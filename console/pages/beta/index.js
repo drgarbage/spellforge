@@ -15,21 +15,21 @@ export default () => {
         <CardButton 
           title="人偶相機"
           href="/beta/live-figure"
-          image="http://ai.printii.com/api/ipfs/QmTm6kbp3iAJdZtNEKNmGtjqsmBgJKZakynbq4GQTYiHzb"
+          image="https://ai.printii.com/api/ipfs/QmTm6kbp3iAJdZtNEKNmGtjqsmBgJKZakynbq4GQTYiHzb"
           />
       </Grid>
       <Grid lg={2} md={3} xs={6}>
         <CardButton
           title="卡通相機"
           href="/beta/anime"
-          image="http://ai.printii.com/api/ipfs/QmdMzKy8VvTvw6LwgsgxAgK2xL2Tp6z5CuLmkC1DdV3jtK"
+          image="https://ai.printii.com/api/ipfs/QmdMzKy8VvTvw6LwgsgxAgK2xL2Tp6z5CuLmkC1DdV3jtK"
           />
       </Grid>
       <Grid lg={2} md={3} xs={6}>
         <CardButton
           title="線稿相機"
           href="/beta/outline"
-          image="/images/jkgirl.png"
+          image="https://ai.printii.com/api/ipfs/QmTJpRuvmoukzcXAmVATGDD8LKp2p76fonZoke2AbFRFLa"
           />
       </Grid>
     </Grid.Container>
