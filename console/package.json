@@ -45,6 +45,7 @@
     "react-range": "^1.8.14",
     "react-swipeable": "^7.0.0",
     "react-webcam": "^7.2.0",
+    "sharp": "^0.32.6",
     "spellforgejs": "https://github.com/drgarbage/spellforgejs.git",
     "tiny-uid": "^1.1.2",
     "tls": "^0.0.1"
