@@ -19,20 +19,28 @@ export default async (req, res) => {
   }
 
   const imageBuffer = Buffer.from(bytes);
-  const overlayBuffer = await sharp(await imageURL2Buffer('https://ai.printii.com/images/logo_overlay.png'))
-    .resize(128)
-    .extend({
-      right: 20,
-      bottom: 20,
-      extendWith: 'copy'
-    })
-    .toBuffer();
+  try {
 
-  const resultBuffer = await sharp(imageBuffer)
-    .composite([{ input: overlayBuffer, gravity: 'southeast' }])
-    .toBuffer();
+    const overlayBuffer = await sharp(await imageURL2Buffer('https://ai.printii.com/images/logo_overlay.png'))
+      .resize(128)
+      .extend({
+        right: 20,
+        bottom: 20,
+        extendWith: 'copy'
+      })
+      .toBuffer();
+
+    const resultBuffer = await sharp(imageBuffer)
+      .composite([{ input: overlayBuffer, gravity: 'southeast' }])
+      .toBuffer();
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=259200');
+    res.status(200).send(Buffer.from(resultBuffer));
+  } catch (err) {
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=259200');
+    res.status(200).send(Buffer.from(imageBuffer));
+  }
     
-  res.setHeader('Content-Type', 'image/png');
-  res.setHeader('Cache-Control', 'public, max-age=259200');
-  res.status(200).send(Buffer.from(resultBuffer));
 }

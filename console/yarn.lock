@@ -4250,7 +4250,7 @@ space-separated-tokens@^2.0.0:
 
 "spellforgejs@https://github.com/drgarbage/spellforgejs.git":
   version "1.0.0"
-  resolved "https://github.com/drgarbage/spellforgejs.git#58a30e1ce8445a2bfc716dbdc7e1f71b32000425"
+  resolved "https://github.com/drgarbage/spellforgejs.git#955cc067c948535e4c36ef14112a0b47ec0281e2"
   dependencies:
     axios "^1.5.1"
     exifreader "^4.15.0"
