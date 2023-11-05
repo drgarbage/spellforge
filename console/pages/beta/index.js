@@ -1,4 +1,4 @@
-import { Grid, Card, Text, Link } from "@nextui-org/react";
+import { Grid, Card, Text, Link, Container } from "@nextui-org/react";
 
 const CardButton = ({title, href, image}) => 
   <Card isPressable as={Link} href={href}>
@@ -9,29 +9,40 @@ const CardButton = ({title, href, image}) =>
   </Card>
 
 export default () => {
+  const interfaces = [
+    {
+      title:"人偶相機",
+      href:"/beta/live-figure",
+      image:"https://ai.printii.com/api/ipfs/QmTm6kbp3iAJdZtNEKNmGtjqsmBgJKZakynbq4GQTYiHzb"
+    },
+    {
+      title:"卡通相機",
+      href:"/beta/anime",
+      image:"https://ai.printii.com/api/ipfs/QmdMzKy8VvTvw6LwgsgxAgK2xL2Tp6z5CuLmkC1DdV3jtK"
+    },
+    {
+      title:"線稿相機",
+      href:"/beta/outline",
+      image:"http://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
+    }
+  ];
+
   return (
-    <Grid.Container gap={1}>
-      <Grid lg={2} md={3} xs={6}>
-        <CardButton 
-          title="人偶相機"
-          href="/beta/live-figure"
-          image="https://ai.printii.com/api/ipfs/QmTm6kbp3iAJdZtNEKNmGtjqsmBgJKZakynbq4GQTYiHzb"
-          />
-      </Grid>
-      <Grid lg={2} md={3} xs={6}>
-        <CardButton
-          title="卡通相機"
-          href="/beta/anime"
-          image="https://ai.printii.com/api/ipfs/QmdMzKy8VvTvw6LwgsgxAgK2xL2Tp6z5CuLmkC1DdV3jtK"
-          />
-      </Grid>
-      <Grid lg={2} md={3} xs={6}>
-        <CardButton
-          title="線稿相機"
-          href="/beta/outline"
-          image="https://ai.printii.com/api/ipfs/QmTJpRuvmoukzcXAmVATGDD8LKp2p76fonZoke2AbFRFLa"
-          />
-      </Grid>
-    </Grid.Container>
+    <Container>
+      <Grid.Container gap={1}>
+        <Grid xs={12}>
+          <Text weight="bold">CAMERAS</Text>
+        </Grid>
+        { interfaces.map(({title, href, image}) => 
+          <Grid lg={2} md={3} sm={4} xs={6}>
+            <CardButton 
+              title={title}
+              href={href}
+              image={image}
+              />
+          </Grid>
+        )}
+      </Grid.Container>
+    </Container>
   );
 }
