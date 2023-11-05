@@ -152,7 +152,7 @@ export const SingleGenerationView = ({
       });
 
       const result = source && withAPI !== 'txt2img' ?
-        await api.img2img({...adjustedParam, image: source}, { onProgress, timeout: 5000 }) :
+        await api.img2img({...adjustedParam, image: source}, { onProgress, timeout }) :
         await api.txt2img({...adjustedParam}, { onProgress, timeout});
 
       if(result?.images?.[0]) 
