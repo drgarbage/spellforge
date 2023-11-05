@@ -34,7 +34,7 @@ export default () => {
           <Text weight="bold">CAMERAS</Text>
         </Grid>
         { interfaces.map(({title, href, image}) => 
-          <Grid lg={2} md={3} sm={4} xs={6}>
+          <Grid key={href} lg={2} md={3} sm={4} xs={6}>
             <CardButton 
               title={title}
               href={href}

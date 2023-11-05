@@ -53,7 +53,7 @@ export const SingleGenerationView = ({
   size,
   withAPI,
   advanceOptions,
-  onPreGeneration,
+  onPreGeneration = (p) => p,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { SingleGenerationView } from "../components";
+import { SingleGenerationView } from "../../../components/single-gen-base";
 
 export default () => 
   <SingleGenerationView 
