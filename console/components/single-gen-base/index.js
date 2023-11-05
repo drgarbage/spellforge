@@ -106,6 +106,7 @@ export const SingleGenerationView = ({
   const ovr = (changes) => adv({override_settings: {...params?.advanceOptions?.override_settings, ...changes}});
 
   const onProgress = (progress, progressImage) => {
+    if(!loading) return;
     if(progress === 1) return;
     if(progressImage)
       setLoading({...loading, progress, progressImage});
