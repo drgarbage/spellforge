@@ -53,7 +53,7 @@ export const SingleGenerationView = ({
   size,
   withAPI,
   advanceOptions,
-  onPreGeneration = (p) => p,
+  onPreGeneration = ({params}) => Promise.resolve(params),
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -120,14 +120,14 @@ export const SingleGenerationView = ({
 
     const timeout = 1800000;
     const translate = async (org) => {
-      const { prompt } = cloneDeep(org);
+      const { prompt } = org;
       if(isEnglish(prompt)) return {...org};
       const { text } = await request('/api/en', {method: 'POST', body: { text: prompt }});
       return {...org, prompt: text};
     }
 
     try {
-      const p = await translate(params);
+      const p = cloneDeep(await translate(params));
 
       if(source) {
         delete p.advanceOptions.enable_hr;
