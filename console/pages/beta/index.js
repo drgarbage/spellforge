@@ -24,7 +24,12 @@ export default () => {
       title:"線稿相機",
       href:"/beta/outline",
       image:"http://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
-    }
+    },
+    {
+      title:"填色相機",
+      href:"/beta/painting",
+      image:"http://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
+    },
   ];
 
   return (
