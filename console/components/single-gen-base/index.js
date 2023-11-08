@@ -1,12 +1,13 @@
-import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer, Dropdown } from "@nextui-org/react";
+import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer, Dropdown, Container, Loading } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useWindowDimensions } from "components/use-window-dimensions";
+import { useRouter } from "next/router";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faCameraRetro, faX, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faCameraRetro, faX, faRotate, faSliders, faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { isEnglish } from "libs/utils";
 import { request } from "libs/api-base";
-import { useTranslation } from "react-i18next";
-import { useWindowDimensions } from "components/use-window-dimensions";
 import { infoFromBase64URL } from 'spellforgejs/lib/utils/image';
 import { Slider } from "components/slider";
 import { cloneDeep } from "lodash";
@@ -14,10 +15,10 @@ import { cloneDeep } from "lodash";
 import Webcam from "react-webcam";
 import Head from "next/head";
 import spellforge from "spellforgejs";
-import { useRouter } from "next/router";
 
+const DEVICE_HEIGHT = 'calc(100vh - 92px)';
 const api = spellforge({apiKey: '_', credential: '_'});
-const percentage = (value) => Math.round(value * 100);
+const percentage = (value) => !!value ? Math.round(value * 100) : 0;
 
 const bytes2Base64URL = file => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -106,12 +107,14 @@ export const SingleGenerationView = ({
   const ovr = (changes) => adv({override_settings: {...params?.advanceOptions?.override_settings, ...changes}});
 
   const onProgress = (progress, progressImage) => {
-    if(!loading) return;
-    if(progress === 1) return;
-    if(progressImage)
-      setLoading({...loading, progress, progressImage});
-    else
-      setLoading({...loading, progress});
+    setLoading((loading) => {
+      if(loading === null) return loading;
+      if(progress === 1) return null;
+      if(progressImage)
+        return {...loading, progress, progressImage};
+      else
+        return {...loading, progress};
+    });
   };
 
   const generate = async () => {
@@ -191,6 +194,23 @@ export const SingleGenerationView = ({
     setResultImage(null);
   }
 
+  const onShare = async () => {
+    try {
+      const blob = await(await fetch(resultImage)).blob();
+      const file = new File([blob], `photo.png`);
+      const shareData = {
+        title: params.prompt,
+        text: params.prompt,
+        files: [file]
+      };
+      if(navigator.canShare(shareData))
+        await navigator.share(shareData);
+    } catch(err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
   useEffect(()=>{
     api
       .infos()
@@ -216,7 +236,8 @@ export const SingleGenerationView = ({
 
 
   return (
-    <Grid.Container gap={1}>
+
+    <Col className="fill-available" css={{display: 'flex', flexDirection: 'column'}}>
       <Head>
         <title>Single Generation</title>
         <meta name="description" content="Single Generation" />
@@ -226,14 +247,15 @@ export const SingleGenerationView = ({
 
       <style jsx global>
         {`
-          html, body {
+          body { 
             overflow: hidden;
-            height: 100%;
+            height: fill-available;
+          }
+          .fill-available {
+            height: fill-available;
           }
         `}
       </style>
-
-      {/** Hidden Input */}
 
       <input 
         id="picker" 
@@ -242,88 +264,98 @@ export const SingleGenerationView = ({
         style={{display: 'none'}} 
         onChange={onSelectImage}
         />
+        
+      <Grid.Container gap={2} css={{flex:1, backgroundColor: '#ddd'}}>
+        
+        { !showCamera &&
+          <Grid xs={12} alignItems="center" justify="center">
+            <Card variant="flat">
+              { !!loading &&
+                <Card.Header css={{position: 'absolute', top: 5}}>
+                  <Progress color="primary" size="sm" value={percentage(loading?.progress)} />
+                </Card.Header>
+              }
+              <Card.Image 
+                css={{maxHeight: DEVICE_HEIGHT}}
+                src={image}
+                alt="generativeImage"
+              />
+            </Card>
+          </Grid>
+        }
 
+        { showCamera &&
+          <Grid xs={12} alignItems="center" justify="center" css={{display: showCamera ? "inherit" : "none"}}>
+            <Card>
+              <Card.Body css={{padding:0}}>
 
-      { showCamera &&
-        <Webcam 
-          style={{height: '100vh', backgroundColor: 'black'}}
-          audio={false}
-          width="100%"
-          height="100%"
-          screenshotFormat="image/png"
-          videoConstraints={{...mediaConstrain, facingMode}}
-          >
-            {({ getScreenshot }) => (
-              <Row align="center" justify="center" css={{position: "absolute", zIndex: 3, bottom: 20}}>
-                <RoundButton 
-                  icon={faX} 
-                  radius={64}
-                  onPress={()=>{
-                    setShowCamera(false);
-                  }}
-                  />
-                <Spacer x={1} />
-                <RoundButton 
-                  icon={faCameraRetro} 
-                  radius={84}
-                  onPress={()=>{
-                    setShowCamera(false);
-                    onCameraShot(getScreenshot());
-                  }}
-                  />
-                <Spacer x={1} />
-                <RoundButton 
-                  icon={faRotate} 
-                  radius={64}
-                  onPress={()=>{
-                    setFacingMode(
-                      facingMode === 'user' ? 
-                        'environment' : 'user'
-                    );
-                  }}
-                  />
+                <Webcam 
+                  open={showCamera}
+                  audio={false}
+                  screenshotFormat="image/png"
+                  videoConstraints={{...mediaConstrain, facingMode}}
+                  >
+                    {({ getScreenshot }) => (
+                      <Row align="center" justify="center" css={{position: "absolute", zIndex: 3, bottom: 40, opacity: 0.5}}>
+                        <RoundButton 
+                          icon={faX} 
+                          radius={64}
+                          onPress={()=>{
+                            setShowCamera(false);
+                          }}
+                          />
+                        <Spacer x={1} />
+                        <RoundButton 
+                          icon={faCameraRetro} 
+                          radius={84}
+                          onPress={()=>{
+                            setShowCamera(false);
+                            onCameraShot(getScreenshot());
+                          }}
+                          />
+                        <Spacer x={1} />
+                        <RoundButton 
+                          icon={faRotate} 
+                          radius={64}
+                          onPress={()=>{
+                            setFacingMode(
+                              facingMode === 'user' ? 
+                                'environment' : 'user'
+                            );
+                          }}
+                          />
 
-              </Row>
-            )}
-        </Webcam>
-      }
+                      </Row>
+                    )}
+                </Webcam>
+              </Card.Body>
+            </Card>
+          </Grid>
+        }
+       
 
-      { !showCamera &&
-        <Navbar isCompact css={{position: 'fixed', bottom: 0, zIndex: 1}}>
+      </Grid.Container>
 
+      {!showProps && 
+        <Navbar isCompact containerCss={{padding: 0}}>
           <Navbar.Content css={{flex:1}}>
-            <Row align="center">
-              <Avatar 
-                onClick={onBack}
-                css={{'&': { backgroundColor: 'transparent'}}}
-                icon={<FontAwesomeIcon icon={faChevronLeft} />} 
-                color='transparent'
-                />
+            <Row align="center" justify="space-between">
 
-              <div 
-                onClick={() => setShowProps(true)}
-                style={{
-                  backgroundColor: '#EEE',
-                  flex: 1,
-                  height: '28px',
-                  lineHeight: '24px',
-                  padding: '0px 10px 0px 10px',
-                  margin: '0px 5px 0px 5px',
-                  justifyContent: 'center',
-                  verticalAlign: 'center',
-                  overflow: 'clip',
-                  textOverflow: 'ellipsis ellipsis',
-                  borderRadius: 8,
-                }}>{params.prompt}</div>
+              <Button auto light onPress={onBack}><FontAwesomeIcon icon={faChevronLeft} /></Button>
+
+              <Button.Group css={{width: '100%'}}>
+                <Button onPress={() => setShowProps(!showProps)}><FontAwesomeIcon icon={faSliders} /></Button>
+                <Button css={{flex:1}} onPress={generate}>
+                  {loading && <Loading color="currentColor" size="xs" />}
+                  {!loading && "Generate"}
+                </Button>
+              </Button.Group>
+
+              <Button.Group color="default">
 
                 <Popover isOpen={showImgOptions} onOpenChange={setShowImgOptions}>
                   <Popover.Trigger>
-                    <Avatar 
-                      src={source || ''} 
-                      css={{'&': { backgroundColor: 'transparent'}}}
-                      icon={<FontAwesomeIcon icon={faImage} />} 
-                      color='transparent'
-                      />
+                    <Button auto><FontAwesomeIcon icon={faImage} /></Button>
                   </Popover.Trigger>
                   <Popover.Content>
                     <Button.Group>
@@ -357,31 +389,16 @@ export const SingleGenerationView = ({
                   </Popover.Content>
                 </Popover>
 
+                <Button auto onPress={onShare}><FontAwesomeIcon icon={faArrowUpFromBracket} /></Button>
+
+              </Button.Group>
+
               </Row>
           </Navbar.Content>
         </Navbar>
       }
-        
-      { !showCamera && 
-        <Grid css={{height: '100vh'}} xs={12}>
-          <Card isPressable onPress={generate}>
-            { !!loading?.progress &&
-              <Card.Header css={{position: 'absolute', top: 5}}>
-                <Progress color="primary" size="sm" value={percentage(loading?.progress)} />
-              </Card.Header>
-            }
-            <Card.Image 
-              src={image}
-              objectFit="cover"
-              width="100%"
-              height="100%"
-              alt="generativeImage"
-            />
-          </Card>
-        </Grid>
-      }
 
-      {/** Overlay */}
+
 
       { showProps &&
         <Row 
@@ -391,7 +408,8 @@ export const SingleGenerationView = ({
             position: 'absolute', 
             width: '100vw',
             height: '100vh',
-            zIndex: 2,
+            top: 0,
+            zIndex: 98,
           }} 
           />
       }
@@ -403,7 +421,7 @@ export const SingleGenerationView = ({
             "&": { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
             position: 'absolute',
             bottom: 0,
-            zIndex: 3
+            zIndex: 99
           }}>
           <Card.Body>
             <Col>
@@ -414,7 +432,7 @@ export const SingleGenerationView = ({
                 >
                 <option value={null}>未指定</option>
                 {infos.sdmodels.map(item => 
-                  <option value={item.key}>{item.name}</option>
+                  <option key={item.key} value={item.key}>{item.name}</option>
                 )}
               </select>
               <Spacer y={1} />
@@ -425,7 +443,7 @@ export const SingleGenerationView = ({
                 >
                 <option value={null}>未指定</option>
                 {infos.samplers.map(item => 
-                  <option value={item.key}>{item.name}</option>
+                  <option key={item.key} value={item.key}>{item.name}</option>
                 )}
               </select>
               <Spacer y={1} />
@@ -467,7 +485,7 @@ export const SingleGenerationView = ({
           </Card.Body>
         </Card>
       }
+    </Col>
 
-    </Grid.Container>
   );
 }

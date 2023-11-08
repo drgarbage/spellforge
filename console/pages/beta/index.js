@@ -2,7 +2,7 @@ import { Grid, Card, Text, Link, Container } from "@nextui-org/react";
 
 const CardButton = ({title, href, image}) => 
   <Card isPressable as={Link} href={href}>
-    <Card.Image src={image} />
+    <Card.Image src={image} objectFit="cover" />
     <Card.Footer css={{justifyContent: 'center', position: 'absolute', bottom:0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
       <Text color="white" weight="bold">{title}</Text>
     </Card.Footer>
@@ -23,12 +23,12 @@ export default () => {
     {
       title:"線稿相機",
       href:"/beta/outline",
-      image:"http://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
+      image:"https://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
     },
     {
       title:"填色相機",
       href:"/beta/painting",
-      image:"http://ai.printii.com/api/ipfs/Qmbcd73HRufwVJxoDbS3owhE8aRR8RhtbLUYh66oeR7MrY"
+      image:"https://ai.printii.com/api/ipfs/Qmf8DCHNTQARsPJB9rWhAUKVZb2V1tSHKWBhpEDqW4FEpY"
     },
   ];
 
