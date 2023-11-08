@@ -6,8 +6,8 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import { documents } from "libs/api-firebase";
 import { grimoires as fetchGrimoires, deleteGrimoire } from "libs/api-storage";
-import { Navbar, Card, Col, Grid, Text, Avatar, Container, Row, Button, Dropdown } from "@nextui-org/react";
-import { User, Plus, Setting, Home } from 'react-iconly';
+import { Navbar, Card, Col, Grid, Text, Avatar, Container, Row, Button, Dropdown} from "@nextui-org/react";
+import { User, Plus, Setting, Home, MoreSquare } from 'react-iconly';
 import { GrimoireCard } from "components/grimoire-card";
 
 import moment from "moment-timezone";
@@ -112,6 +112,7 @@ export default () => {
                     <Dropdown.Section>
                       <Dropdown.Item key="/my" icon={<User set="broken" />}>Profile</Dropdown.Item>
                       <Dropdown.Item key="/my/preferences" icon={<Setting set="broken" />}>Preferences</Dropdown.Item>
+                      <Dropdown.Item key="/beta" icon={<MoreSquare set="broken" />}>Beta</Dropdown.Item>
                     </Dropdown.Section>
                     <Dropdown.Section>
                       <Dropdown.Item key="/" icon={<Home set="broken" />}>Home</Dropdown.Item>
