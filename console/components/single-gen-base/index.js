@@ -1,23 +1,40 @@
-import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer, Dropdown, Container, Loading } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "components/use-window-dimensions";
 import { useRouter } from "next/router";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faCameraRetro, faX, faRotate, faSliders, faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { isEnglish } from "libs/utils";
 import { request } from "libs/api-base";
-import { infoFromBase64URL } from 'spellforgejs/lib/utils/image';
-import { Slider } from "components/slider";
 import { cloneDeep } from "lodash";
-
+import { infoFromBase64URL } from 'spellforgejs/lib/utils/image';
 import Webcam from "react-webcam";
 import Head from "next/head";
 import spellforge from "spellforgejs";
 
+import { Card, Grid, Navbar, Progress, Row, Text, Button, Col, Textarea, Popover, Avatar, Spacer, Dropdown, Container, Loading, useTheme } from "@nextui-org/react";
+import { Slider } from "components/slider";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faCameraRetro, faX, faRotate, faSliders, faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
+
+
 const DEVICE_HEIGHT = 'calc(100vh - 92px)';
+const DEFAULT_ADVOPTIONS = {
+  negative_prompt: '(futa:2), (worse quality:2), (bad quality:2), (normal quality:2), (ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331),(bad anatomy:1.21), (bad proportions:1.331), easynegative, paintings, sketches, lowres, monochrome, grayscale, backlight, extra digit, NG_DeepNegative_V1_75T',
+  steps: 24,
+  cfg_scale: 7,
+  denoising_strength: 0.4,
+  sampler_name: 'Euler a',
+
+  // txt2img only
+  enable_hr: true,
+  hr_scale: 2,
+  hr_upscaler: "ESRGAN_4x",
+  hr_second_pass_steps: 0,
+};
+
 const api = spellforge({apiKey: '_', credential: '_'});
+
 const percentage = (value) => !!value ? Math.round(value * 100) : 0;
 
 const bytes2Base64URL = file => new Promise((resolve, reject) => {
@@ -57,6 +74,7 @@ export const SingleGenerationView = ({
   onPreGeneration = ({params}) => Promise.resolve(params),
 }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const router = useRouter();
   const [infos, setInfos] = useState({
     samplers: [],
@@ -73,21 +91,7 @@ export const SingleGenerationView = ({
     prompt: prompt || '1girl',
     size: size || '512x512',
     n: 1,
-    advanceOptions: {
-      negative_prompt: '(futa:2), (worse quality:2), (bad quality:2), (normal quality:2), (ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331),(bad anatomy:1.21), (bad proportions:1.331), easynegative, paintings, sketches, lowres, monochrome, grayscale, backlight, extra digit, NG_DeepNegative_V1_75T',
-      steps: 24,
-      cfg_scale: 7,
-      denoising_strength: 0.4,
-      sampler_name: 'Euler a',
-
-      // txt2img only
-      enable_hr: true,
-      hr_scale: 2,
-      hr_upscaler: "ESRGAN_4x",
-      hr_second_pass_steps: 0,
-
-      ...advanceOptions,
-    }
+    advanceOptions: { ...DEFAULT_ADVOPTIONS, ...advanceOptions }
   });
   const [showProps, setShowProps] = useState(false);
   const [showImgOptions, setShowImgOptions] = useState(false);
@@ -337,15 +341,16 @@ export const SingleGenerationView = ({
       </Grid.Container>
 
       {!showProps && 
-        <Navbar isCompact containerCss={{padding: 0}}>
-          <Navbar.Content css={{flex:1}}>
-            <Row align="center" justify="space-between">
+        <Navbar isCompact>
+          <Navbar.Brand>
+            <Button auto light onPress={onBack}><FontAwesomeIcon icon={faChevronLeft} /></Button>  
+          </Navbar.Brand>
+          <Navbar.Content>
+            <Row align="center">  
 
-              <Button auto light onPress={onBack}><FontAwesomeIcon icon={faChevronLeft} /></Button>
-
-              <Button.Group css={{width: '100%'}}>
+              <Button.Group>
                 <Button onPress={() => setShowProps(!showProps)}><FontAwesomeIcon icon={faSliders} /></Button>
-                <Button css={{flex:1}} onPress={generate}>
+                <Button onPress={generate}>
                   {loading && <Loading color="currentColor" size="xs" />}
                   {!loading && "Generate"}
                 </Button>
@@ -393,7 +398,7 @@ export const SingleGenerationView = ({
 
               </Button.Group>
 
-              </Row>
+            </Row>
           </Navbar.Content>
         </Navbar>
       }
@@ -416,7 +421,6 @@ export const SingleGenerationView = ({
 
       { showProps &&
         <Card 
-          // className={`${styles.cardAnimation}`}
           css={{
             "&": { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
             position: 'absolute',
@@ -474,7 +478,6 @@ export const SingleGenerationView = ({
               <Textarea
                 fullWidth
                 multiple
-                autoFocus
                 maxRows={20}
                 size="sm"
                 aria-label="prompt"

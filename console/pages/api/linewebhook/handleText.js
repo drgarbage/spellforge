@@ -15,6 +15,8 @@ const {
 export const handleText = async (event) => {
   const initial = new Date();
 
+  console.log(sdapiHost);
+
   if(!['幫我畫', '幫我設計', '我想問', '我就問', '請教一下']
     .some(keyword => event.message.text.includes(keyword)))
     return null; 
