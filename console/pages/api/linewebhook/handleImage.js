@@ -73,29 +73,29 @@ export const handleImageAlbum = async (event) => {
             reactor: {
               args: [
                 userImageBase64,
-                true, //1 Enable ReActor
-                '0', //2 Comma separated face number(s) from swap-source image
-                '0', //3 Comma separated face number(s) for target image (result)
-                'C:\stable-diffusion-webui\models\insightface\inswapper_128.onnx', //4 model path
-                'CodeFormer', //4 Restore Face: None; CodeFormer; GFPGAN
-                1, //5 Restore visibility value
-                true, //7 Restore face -> Upscale
-                '4x_NMKD-Superscale-SP_178000_G', //8 Upscaler (type 'None' if doesn't need), see full list here: http://127.0.0.1:7860/sdapi/v1/script-info -> reactor -> sec.8
-                2, //9 Upscaler scale value
-                1, //10 Upscaler visibility (if scale = 1)
-                false, //11 Swap in source image
-                true, //12 Swap in generated image
-                1, //13 Console Log Level (0 - min, 1 - med or 2 - max)
-                0, //14 Gender Detection (Source) (0 - No, 1 - Female Only, 2 - Male Only)
-                0, //15 Gender Detection (Target) (0 - No, 1 - Female Only, 2 - Male Only)
-                false, //16 Save the original image(s) made before swapping
-                0.8, //17 CodeFormer Weight (0 = maximum effect, 1 = minimum effect), 0.5 - by default
-                false, //18 Source Image Hash Check, True - by default
-                false, //19 Target Image Hash Check, False - by default
-                "CUDA", //20 CPU or CUDA (if you have it), CPU - by default
-                true, //21 Face Mask Correction
-                1, //22 Select Source, 0 - Image, 1 - Face Model
-                "elena.safetensors", //23 Filename of the face model (from "models/reactor/faces"), e.g. elena.safetensors
+                true, // 1 Enable ReActor
+                '0', // 2 Comma separated face number(s) from swap-source image
+                '0', // 3 Comma separated face number(s) for target image (result)
+                "D:\\02.Projects\\stable-diffusion-webui\\models\\insightface\\inswapper_128.onnx", // 4 model path 
+                'CodeFormer', // 4 Restore Face: None; CodeFormer; GFPGAN
+                1, // 5 Restore visibility value
+                true, // 7 Restore face -> Upscale
+                '4x_NMKD-Superscale-SP_178000_G', // 8 Upscaler (type 'None' if doesn't need), see full list here: http://127.0.0.1:7860/sdapi/v1/script-info -> reactor -> sec.8
+                1, // 9 Upscaler scale value
+                1, // 10 Upscaler visibility (if scale = 1)
+                false, // 11 Swap in source image
+                true, // 12 Swap in generated image
+                0, // 13 Console Log Level (0 - min, 1 - med or 2 - max)
+                0, // 14 Gender Detection (Source) (0 - No, 1 - Female Only, 2 - Male Only)
+                0, // 15 Gender Detection (Target) (0 - No, 1 - Female Only, 2 - Male Only)
+                false, // 16 Save the original image(s) made before swapping
+                0.8, // 17 CodeFormer Weight (0 = maximum effect, 1 = minimum effect), 0.5 - by default
+                false, // 18 Source Image Hash Check, true - by default
+                false, // 19 Target Image Hash Check, false - by default
+                "CUDA", // 20 CPU or CUDA (if you have it), CPU - by default
+                true, // 21 Face Mask Correction
+                0, // 22 Select Source, 0 - Image, 1 - Face Model
+                "", // 23 Filename of the face model (from "models/reactor/faces"), e.g. elena.safetensors
               ],
             },
           }
