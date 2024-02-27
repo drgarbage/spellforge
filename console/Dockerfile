@@ -15,6 +15,8 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
+# Install Python
+RUN apk add --no-cache python3
 
 # Rebuild the source code only when needed
 FROM base AS builder
