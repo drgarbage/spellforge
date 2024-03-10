@@ -11,7 +11,6 @@ export const imageURL2Buffer = async (url) => {
 }
 
 export default async function imageOf(cid) {
-  const {cid} = req.query;
   const ipfs = create(IPFS_HOST);
 
   const bytes = [];

@@ -2,8 +2,6 @@ import imageOf from 'libs/ipfs/imageOf';
 const axios = require('axios');
 const sharp = require('sharp');
 
-const { IPFS_HOST } = process.env;
-
 export const imageURL2Buffer = async (url) => {
   const response = await axios.get(url, { responseType: 'arraybuffer' });
   return Buffer.from(response.data, 'binary');
