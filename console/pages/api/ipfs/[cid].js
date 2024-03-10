@@ -1,4 +1,4 @@
-import { create } from 'kubo-rpc-client';
+import imageOf from 'libs/ipfs/imageOf';
 const axios = require('axios');
 const sharp = require('sharp');
 
