@@ -4,7 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "docker:buildx": "docker buildx build --platform linux/amd64,linux/arm64 -t drgarbage/yoonji-console:latest . --push",
-    "docker:build": "docker build -t drgarbage/yoonji-console:latest .",
+    "docker:build": "docker build --platform linux/amd64 -t drgarbage/yoonji-console:latest .",
     "docker:push": "docker push drgarbage/yoonji-console:latest",
     "docker:reload": "ssh -t -p 50322 -i ~/.ssh/id_rsa rhythm@dev.printii.com 'bash -i -c \"./Development/02.Projects/yoon-ji/reload.sh\"'",
     "deploy": "yarn docker:build && yarn docker:push",
