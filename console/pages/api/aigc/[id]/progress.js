@@ -1,5 +1,5 @@
-import { updateWithCondition } from "libs/api-firebase";
-import { document } from "libs/api-firebase";
+import progressOf from "libs/aigc-queue/progressOf";
+import updateProgress from "libs/aigc-queue/updateProgress";
 
 const isNumber = (value) => 
   typeof value === 'number' && isFinite(value);
@@ -9,19 +9,11 @@ export default async (req, res) => {
 
   if(!!req.body && !!req.body.progress && isNumber(req.body.progress)) {
     const { progress, progressImage } = req.body;
-    const data = { progress, progressImage};
-    await updateWithCondition(
-      'tasks-aigc', taskId, data, 
-      (existedData) => {
-        if(!existedData) return false;
-        if(!isNumber(existedData?.progress)) return true;
-        return progress > existedData.progress;
-      }
-    );
+    await updateProgress(taskId, progress, progressImage);
   }
 
-  const { progress = 0,  progressImage = null } = 
-    (await document('tasks-aigc', taskId)) || {};
+  const latestProgress =
+    await progressOf(taskId);
     
-  res.status(200).json({ progress,  progressImage });
+  res.status(200).json(latestProgress);
 }
