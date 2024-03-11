@@ -1,11 +1,9 @@
-import { SDAPI_DEFAULT_NEG } from './constants';
+// import { SDAPI_DEFAULT_NEG } from './constants';
+// import { removeBackground } from '@imgly/background-removal-node';
 import { observe } from 'libs/api-firebase';
 import { sleep, convertStreamToBase64 } from 'libs/utils';
-import { removeBackground } from '@imgly/background-removal-node';
 import client, { pushImages, replyImages } from './client';
 import enqueue from 'libs/aigc-queue/enqueue';
-
-const { SDAPI_DEFAULT_HOST : sdapiHost } = process.env;
 
 const getImageContentAsBlob = async (imageId) => {
   let retryCount = 0;
@@ -151,53 +149,53 @@ export const handleImageAlbum = async (event) => {
 
 export const handleImageLineart = async (event) => {
 
-  if(event.message.contentProvider.type === 'line') {
+  // if(event.message.contentProvider.type === 'line') {
 
-    const imageSrcBlob = await getImageContentAsBlob(event.message.id);
-    const imageBlob = await removeBackground(imageSrcBlob);
-    const rembgImageBase64 = Buffer.from(await imageBlob.arrayBuffer()).toString('base64');
+  //   const imageSrcBlob = await getImageContentAsBlob(event.message.id);
+  //   const imageBlob = await removeBackground(imageSrcBlob);
+  //   const rembgImageBase64 = Buffer.from(await imageBlob.arrayBuffer()).toString('base64');
     
-    const prompt = 'line art, sketch, outline, stroke, ultra detailed, (monochrome:1.2), (white background:1.4), (no background:1.4) <lora:animeoutlineV3:0.8>';
+  //   const prompt = 'line art, sketch, outline, stroke, ultra detailed, (monochrome:1.2), (white background:1.4), (no background:1.4) <lora:animeoutlineV3:0.8>';
     
-    const api = 'txt2img';
-    const params = {
-      prompt, 
-      negative_prompt: SDAPI_DEFAULT_NEG + ' (fill:1.3), (background:1.3), (shadow:1.3), background',
-      width: 1024,
-      height: 768,
-      steps: 40,
-      cfg_scale: 10,
-      sampler_index: 'Euler a',
-      // batch_size: 4,
-      // do_not_save_grid: true,
-      // enable_hr: true,
-      // denoising_strength: 0.4,
-      // hr_scale: 1.334,
-      // hr_upscaler: "R-ESRGAN 4x+",
-      // hr_second_pass_steps: 0,
-      seed: 2062640071,
-      override_settings: {
-        sd_model_checkpoint: '423dc55b3f'
-      },
-      alwayson_scripts: {
-        controlnet: {
-          args: [
-            {
-              input_image: rembgImageBase64,
-              module: "lineart_realistic",
-              model: "control_v11p_sd15_lineart [43d4be0d]",
-              pixel_perfect: true,
-              processor_res: 1024,
-              weight: 1,
-              resize_mode: 2,
-              guidance_start: 0,
-              guidance_end: 1.0
-            }
-          ]
-        }
-      }
-    };
+  //   const api = 'txt2img';
+  //   const params = {
+  //     prompt, 
+  //     negative_prompt: SDAPI_DEFAULT_NEG + ' (fill:1.3), (background:1.3), (shadow:1.3), background',
+  //     width: 1024,
+  //     height: 768,
+  //     steps: 40,
+  //     cfg_scale: 10,
+  //     sampler_index: 'Euler a',
+  //     // batch_size: 4,
+  //     // do_not_save_grid: true,
+  //     // enable_hr: true,
+  //     // denoising_strength: 0.4,
+  //     // hr_scale: 1.334,
+  //     // hr_upscaler: "R-ESRGAN 4x+",
+  //     // hr_second_pass_steps: 0,
+  //     seed: 2062640071,
+  //     override_settings: {
+  //       sd_model_checkpoint: '423dc55b3f'
+  //     },
+  //     alwayson_scripts: {
+  //       controlnet: {
+  //         args: [
+  //           {
+  //             input_image: rembgImageBase64,
+  //             module: "lineart_realistic",
+  //             model: "control_v11p_sd15_lineart [43d4be0d]",
+  //             pixel_perfect: true,
+  //             processor_res: 1024,
+  //             weight: 1,
+  //             resize_mode: 2,
+  //             guidance_start: 0,
+  //             guidance_end: 1.0
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   };
 
-    processImageGeneration(event, api, params);
-  }
+  //   processImageGeneration(event, api, params);
+  // }
 }
