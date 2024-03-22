@@ -327,15 +327,6 @@ export default () => {
       </footer>
 
       <Toaster />
-      <link rel="stylesheet" href="https://agent.d-id.com/1.0.0-beta.77/style.css"/>
-      <script
-          type="module"
-          src="https://agent.d-id.com/1.0.0-beta.77/index.js"
-          data-name="did-agent"
-          data-mode="fabio"
-          data-client-key="Z29vZ2xlLW9hdXRoMnwxMDU0Nzk0ODQ0MjMzNDU1NjEyMzQ6OTRIdUl2X1p0NkJnYTNPblpxUjg0"
-          data-agent-id="agt_7qQeafTh">
-      </script>
     </>
   );
 }
