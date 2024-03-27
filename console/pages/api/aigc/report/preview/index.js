@@ -1,10 +1,12 @@
-import { removeBackground } from "@imgly/background-removal-node";
+import { uploadImage } from "libs/api-firebase";
+import uid from 'tiny-uid';
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
 
 async function getRawBody(readable) {
   const chunks = [];
@@ -24,10 +26,10 @@ export default async (req, res) => {
     const contentType = req.headers['content-type'];
     const imageSrcBuffer = await getRawBody(req);
     const imageSrcBlob = new Blob([imageSrcBuffer], { type: contentType })
-    const rembgBlob = await removeBackground(imageSrcBlob);
-    const rembgBuffer = Buffer.from(await rembgBlob.arrayBuffer());
-    res.setHeader('Content-Type', contentType);
-    res.status(200).send(rembgBuffer);
+    const imageid = uid(7, true);
+    const imageUrl = await uploadImage(`/aigc/tmp/${imageid}`, imageSrcBlob);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(imageUrl);
   }catch(err){
     res.status(500).json({result: false, message: err.message});
   }

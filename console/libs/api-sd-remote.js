@@ -65,7 +65,7 @@ const IMG2IMG_DEFAULTS = {
 
 const sdapi = (h) => {
 
-  const host = hostPart('https:' + h.replace('http:', '').replace('https:',''));
+  const host = h;
   
   return {
 

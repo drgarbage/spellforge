@@ -1,4 +1,4 @@
-import { removeBackground } from "@imgly/background-removal-node";
+import { segmentForeground } from "@imgly/background-removal-node";
 
 export const config = {
   api: {
@@ -24,7 +24,7 @@ export default async (req, res) => {
     const contentType = req.headers['content-type'];
     const imageSrcBuffer = await getRawBody(req);
     const imageSrcBlob = new Blob([imageSrcBuffer], { type: contentType })
-    const rembgBlob = await removeBackground(imageSrcBlob);
+    const rembgBlob = await segmentForeground(imageSrcBlob);
     const rembgBuffer = Buffer.from(await rembgBlob.arrayBuffer());
     res.setHeader('Content-Type', contentType);
     res.status(200).send(rembgBuffer);

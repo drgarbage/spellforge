@@ -3,20 +3,21 @@ import { useRouter } from "next/router";
 import { useUserContext } from "context";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
-import { documents } from "libs/api-firebase";
-import { grimoires as fetchGrimoires, deleteGrimoire } from "libs/api-storage";
-import { Navbar, Card, Col, Grid, Text, Avatar, Container, Row, Button, Dropdown } from "@nextui-org/react";
-import { User, Plus, Setting, Home } from 'react-iconly';
+import { Navbar, Card, Col, Grid, Text, Avatar, Container, Row, Button, Dropdown} from "@nextui-org/react";
 import { GrimoireCard } from "components/grimoire-card";
+import { grimoires as fetchGrimoires, deleteGrimoire } from "libs/api-storage";
+import { documents } from "libs/api-firebase";
+
+import { User, Plus, Setting, Home, MoreSquare } from 'react-iconly';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 import moment from "moment-timezone";
 import Image from "next/image";
 import Head from "next/head";
 import styles from 'styles/Home.module.css';
 import Logo from "images/logo.svg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+
 
 const Section = ({title, children}) => 
   <Row align="center">
@@ -99,7 +100,7 @@ export default () => {
 
             <Navbar isCompact variant="floating">
               <Navbar.Brand onClick={() => router.push('/')}>
-                <Image width={64} height={64} src={Logo} />
+                <Image width={64} height={64} src={Logo} alt="logo" />
                 <Text style={{lineHeight: '16px', textAlign: 'left'}}>
                   <strong>{t('SITE.NAME')}</strong><br/>
                   <small>{t('SITE.SLOGON')}</small>
@@ -112,6 +113,7 @@ export default () => {
                     <Dropdown.Section>
                       <Dropdown.Item key="/my" icon={<User set="broken" />}>Profile</Dropdown.Item>
                       <Dropdown.Item key="/my/preferences" icon={<Setting set="broken" />}>Preferences</Dropdown.Item>
+                      <Dropdown.Item key="/beta" icon={<MoreSquare set="broken" />}>Beta</Dropdown.Item>
                     </Dropdown.Section>
                     <Dropdown.Section>
                       <Dropdown.Item key="/" icon={<Home set="broken" />}>Home</Dropdown.Item>

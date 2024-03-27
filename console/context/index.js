@@ -4,8 +4,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const InitialState = {
   ready: false,
+  user: null,
   preferences: defaultPreferences, 
-  setPreference: () => {}
+  setPreference: () => {},
+  setUser: () => {}
 }
 
 export const UserContext = createContext(InitialState);
@@ -14,6 +16,7 @@ export const useUserContext = () => useContext(UserContext);
 
 export const WithUserContext = ({children}) => {
   const [ inited, setInited ] = useState(false);
+  const [ user, setUser ] = useState(null);
   const [ preferences, setPreferences ] = useState(defaultPreferences);
 
   const setPreference = (key, value) => 
@@ -35,7 +38,9 @@ export const WithUserContext = ({children}) => {
     <UserContext.Provider value={{
         ready: inited,
         preferences, 
-        setPreference
+        setPreference,
+        user,
+        setUser
       }}>
       {children}
     </UserContext.Provider>

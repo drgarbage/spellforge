@@ -3,8 +3,9 @@ import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/functions';
 import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where, onSnapshot, runTransaction } from "firebase/firestore";
-import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata } from 'firebase/storage';
+import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata, uploadBytes } from 'firebase/storage';
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { FacebookAuthProvider, getAuth, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAh5Ja5su59MF-gbFMbpgclCnqOJAFuM3o",
@@ -15,9 +16,9 @@ const firebaseConfig = {
   appId: "1:464400336008:web:d7c543bc7f71fce6facb3d",
   measurementId: "G-MXH169GJVZ"
 };
-
 const app = firebase.initializeApp(firebaseConfig);
 const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null);
+var recaptchaVerifier = null;
 
 export const document = async (path, id) => {
   const db = getFirestore();
@@ -114,6 +115,18 @@ export const upload = async (path, base64Data, meta = undefined) => {
   return imageUrl;
 };
 
+export const uploadImage = async (path, data, meta = undefined) => {
+  const defaultMeta = {
+    cacheControl: 'public, max-age=7200, s-maxage=7200',
+    ...meta
+  };
+  const storage = getStorage();
+  const storageRef = ref(storage, path);
+  const snapshot = await uploadBytes(storageRef, data, defaultMeta);
+  const imageUrl = await getDownloadURL(storageRef);
+  return imageUrl;
+}
+
 export const estimateURL = async (path) => {
   const storage = getStorage();
   const storageRef = ref(storage, path);
@@ -123,3 +136,45 @@ export const estimateURL = async (path) => {
 
 export const observe = (path, id, callback) => 
   onSnapshot(doc(getFirestore(), path, id), (doc) => callback(doc.data()));
+
+export const robotVerify = (containerName) => 
+  new Promise((resolve, reject) => {
+    try{
+      const config = {
+        'size': 'invisible',
+        'callback': (response) => resolve(response),
+        'expired-callback': () => reject('Expired')
+      };
+      const auth = getAuth();
+      auth.useDeviceLanguage();
+      recaptchaVerifier = new RecaptchaVerifier(containerName, config, auth);
+    }catch(err){
+      reject(err);
+    }
+  });
+
+export const authByPhone = (phoneNumber) => 
+  signInWithPhoneNumber(getAuth(), phoneNumber, recaptchaVerifier);
+
+
+export const authByGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  const auth = getAuth();
+  auth.useDeviceLanguage();
+  const result = await signInWithPopup(auth, provider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const token = credential.accessToken;
+  const user = result.user;
+  return { credential, token, providerId: 'google', user};
+}
+
+export const authByFacebook = async () => {
+  const provider = new FacebookAuthProvider();
+  const auth = getAuth();
+  auth.useDeviceLanguage();
+  const result = await signInWithPopup(auth, provider);
+  const credential = FacebookAuthProvider.credentialFromResult(result);
+  const token = credential.accessToken;
+  const user = result.user;
+  return { credential, token, providerId: 'facebook', user};
+}
