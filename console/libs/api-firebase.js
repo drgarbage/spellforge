@@ -3,7 +3,7 @@ import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/functions';
 import { collection, deleteDoc, doc, addDoc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, setDoc, where, onSnapshot, runTransaction } from "firebase/firestore";
-import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata } from 'firebase/storage';
+import { getStorage, ref, uploadString, getDownloadURL, listAll, updateMetadata, uploadBytes } from 'firebase/storage';
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { FacebookAuthProvider, getAuth, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
 
@@ -114,6 +114,18 @@ export const upload = async (path, base64Data, meta = undefined) => {
   const imageUrl = await getDownloadURL(storageRef);
   return imageUrl;
 };
+
+export const uploadImage = async (path, data, meta = undefined) => {
+  const defaultMeta = {
+    cacheControl: 'public, max-age=7200, s-maxage=7200',
+    ...meta
+  };
+  const storage = getStorage();
+  const storageRef = ref(storage, path);
+  const snapshot = await uploadBytes(storageRef, data, defaultMeta);
+  const imageUrl = await getDownloadURL(storageRef);
+  return imageUrl;
+}
 
 export const estimateURL = async (path) => {
   const storage = getStorage();
