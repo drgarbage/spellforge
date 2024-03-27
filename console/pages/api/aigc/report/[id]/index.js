@@ -26,11 +26,10 @@ export default async (req, res) => {
     const {id : taskId} = req.query;
     const contentType = req.headers['content-type'];
     const imageSrcBuffer = await getRawBody(req);
-    const imageSrcBlob = new Blob([imageSrcBuffer], { type: contentType })
     const imageid = `${taskId}-${uid(4,true)}`;
-    const imageUrl = await uploadImage(`/aigc/${imageid}`, imageSrcBlob);
+    const url = await uploadImage(`/aigc/${imageid}`, imageSrcBuffer, {contentType});
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(imageUrl);
+    res.status(200).send({url});
   }catch(err){
     res.status(500).json({result: false, message: err.message});
   }
