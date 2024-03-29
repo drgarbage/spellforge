@@ -24,12 +24,14 @@ export default async (req, res) => {
 
   try{
     const {id : taskId} = req.query;
+    if(!taskId) 
+      throw new Error("Incorrect Task ID");
     const contentType = req.headers['content-type'];
     const imageSrcBuffer = await getRawBody(req);
-    const imageid = `${taskId}-${uid(4,true)}`;
-    const url = await uploadImage(`/aigc/${imageid}`, imageSrcBuffer, {contentType});
+    const path = `/aigc/${taskId}/progress`;
+    const url = await uploadImage(path, imageSrcBuffer, {contentType});
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).send({url});
+    res.status(200).send({url, path});
   }catch(err){
     res.status(500).json({result: false, message: err.message});
   }
