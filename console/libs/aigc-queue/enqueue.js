@@ -10,10 +10,6 @@ export default async function enqueue(options) { // options : { api, params }
   const task = {
     ...options,
     id: taskId,
-    reportProgress: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/progress`,
-    reportProgressImage: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/progress-image`,
-    reportResult: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/result`,
-    reportResultImage: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/result-image`,
     report_progress_url: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/progress`,
     report_progress_image_url: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/progress-image`,
     report_result_url: `${AMQP_CALLBACK_HOST}/api/aigc/${taskId}/result`,
