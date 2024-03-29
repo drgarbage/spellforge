@@ -19,7 +19,6 @@ export default () =>
     onPreGeneration={async ({params, sourceImage, sourceImageInfo}) => {
       const maskBlob = await segmentForeground(sourceImage);
       const maskB64 = Buffer.from(await maskBlob.arrayBuffer()).toString('base64');
-      // console.log('mask64', maskB64.length);
       return {
         ...params, 
         resize: undefined,

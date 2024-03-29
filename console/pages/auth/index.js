@@ -31,13 +31,11 @@ export default (props) => {
   const onLoginWithPhone = async () => {
     if(!conformation) return;
     const {operationType, providerId, user} = await conformation.confirm(confirmationCode);
-    console.log('user', user);
     setUser(user);
   }
 
   const onLoginWithGoogle = async () => {
     const { providerId, user } = await authByGoogle();
-    console.log('user', user);
     setUser(user);
   }
 

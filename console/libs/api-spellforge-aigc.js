@@ -87,13 +87,13 @@ const sdapi = (h) => {
 
         if(progressImage && !!options.onProgress){
           const p = Math.round(progress * 100);
-          const image = await fetchAsBase64Image(`/api/ipfs/${progressImage}`);
+          const image = await fetchAsBase64Image(progressImage);
           options.onProgress(p, image);
         }
 
         if(progress < 1) return false;
 
-        const images = await Promise.all(result.images.map(img => fetchAsBase64Image(`/api/ipfs/${img}`)));
+        const images = await Promise.all(result.images.map(img => fetchAsBase64Image(img)));
         return { images };
       }, options);
     }

@@ -131,13 +131,11 @@ if(DEBUG)
 //           const filename = require('path').basename(pathname);
 //           const path = decodeURIComponent(filename);
 //           await deleteFile(path);
-//           console.log('deleted:', path);
 //         }catch(err){
 //           console.error(err);
 //         }
 //       }
 //       await remove('posts', post.id);
-//       console.log('post deleted:', post.id);
 //     }
 //     return;
 //   })();
@@ -163,10 +161,8 @@ if(DEBUG)
 
 //       if(restImages.length === 0) {
 //         await remove('posts', post.id);
-//         console.log('post deleted:', post.id);
 //       } else if(restImages.length < 5) {
 //         await update('posts', post.id, {...post, images: restImages});
-//         console.log('post updated:', restImages.length);
 //       }
       
 //     }

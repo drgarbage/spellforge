@@ -66,7 +66,7 @@ export const processImageGeneration = async (event, api, params) => {
       if(!doc?.result?.images) return;
       unsubscribe();
       
-      const imageUrls = doc.result.images.map( cid => `https://ai.printii.com/api/ipfs/${cid}`);
+      const {images: imageUrls = []} = doc?.result;
 
       try{
         await replyImages(event, imageUrls);

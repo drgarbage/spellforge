@@ -13,7 +13,6 @@ import { PhotoCard } from 'components/photo-card';
 import { asBase64Image, ensureImageURL } from 'libs/utils';
 import { useUserContext } from 'context';
 import { useRouter } from 'next/router';
-import api from 'libs/api-sd-remote';
 
 import ReactMarkdown from 'react-markdown';
 import toast, { Toaster } from 'react-hot-toast';
@@ -40,7 +39,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-export default ({
+const ImageForger = ({
   grimoire : initialGrimoire, 
   onGrimoireChanged,
   allowInfo = false,
@@ -318,3 +317,5 @@ export default ({
     </>
   );
 }
+
+export default ImageForger;
