@@ -50,7 +50,6 @@ export const documents = async (path, matches) => {
 
   const q = query(ref, ...queryArgs);
 
-  console.log(q);
   const snapshot = await getDocs(q);
   const output = [];
 
