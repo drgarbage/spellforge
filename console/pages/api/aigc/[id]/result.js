@@ -16,5 +16,9 @@ export default async (req, res) => {
   const task = 
     await document('tasks-aigc', taskId);
     
-  res.status(200).json(task);
+  res.status(200).json({
+    ...task,
+    createAt: task.createAt?.toDate?.().toISOString?.(),
+    completeAt: task.completeAt?.toDate?.().toISOString?.()
+  });
 }
