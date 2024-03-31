@@ -36,7 +36,7 @@ export const documents = async (path, matches) => {
     let value = matches[attr];
 
     if (Array.isArray(value)) {
-      queryArgs.push(where(attr, ...value));
+      queryArgs.push(where(attr, 'in', value));
     } else if (typeof value === 'function') {
       queryArgs.push(where(attr, ...value()));
     } else if (typeof value === 'object' && value !== null) {
@@ -49,6 +49,8 @@ export const documents = async (path, matches) => {
   queryArgs.push(orderBy('createAt', 'desc'));
 
   const q = query(ref, ...queryArgs);
+
+  console.log(q);
   const snapshot = await getDocs(q);
   const output = [];
 
