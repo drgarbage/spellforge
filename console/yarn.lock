@@ -1911,11 +1911,11 @@ axios@^1.4.0:
     proxy-from-env "^1.1.0"
 
 axios@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.1.tgz#11fbaa11fc35f431193a9564109c88c1f27b585f"
-  integrity sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A==
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
+  integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
   dependencies:
-    follow-redirects "^1.15.0"
+    follow-redirects "^1.15.6"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -2357,9 +2357,9 @@ events@^3.2.0:
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 exifreader@^4.15.0:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/exifreader/-/exifreader-4.15.0.tgz#33b155fd754631b0b15ea701e0815fdc4c6837d3"
-  integrity sha512-2GvKkmCSAL7AVnCjcnj9oOahIDt3WQig5NDPvVXx88T18iudMmDjYXiNupb9v0u+WX5ngwdMhgw9zG+k2Qi1fg==
+  version "4.21.1"
+  resolved "https://registry.yarnpkg.com/exifreader/-/exifreader-4.21.1.tgz#6f6bb0b39c81179b080757a7ad508ad98b2dd932"
+  integrity sha512-xbS8byUxV2YVKR3n1ukhwS89KNF77utMePZoHLvQpLvcP+TNkehJBZhdM7HQjDavyY3ggjqZw5vMXbJFtLCDhg==
   optionalDependencies:
     "@xmldom/xmldom" "^0.8.10"
 
@@ -2462,6 +2462,11 @@ follow-redirects@^1.14.9, follow-redirects@^1.15.0:
   version "1.15.2"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
+follow-redirects@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 forever-agent@~0.6.1:
   version "0.6.1"
@@ -3756,9 +3761,9 @@ onnxruntime-web@~1.17.0:
     protobufjs "^7.2.4"
 
 openai@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/openai/-/openai-4.14.0.tgz#5177437683e73bceea1803ea7605905a6e95a0a3"
-  integrity sha512-pWQYkFWdeudR1yLyS/rFfIv/MTXqFEtlN4EKVm0F6KKKGjhuthznPOCC4hxfAFmjlgbpJJXhQQ/oBeB9bxFmUw==
+  version "4.31.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-4.31.0.tgz#5d96045c4eb244fa21f0fff0981043a2c9f09e8c"
+  integrity sha512-JebkRnRGEGLnJt3+bJ5B7au8nBeZvJjs9baVxDmUZ5+BgafAdy6KDxJGSuyaw/IA+ErqY3jmOH5cDC2mCDJF2w==
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
@@ -4389,7 +4394,7 @@ space-separated-tokens@^2.0.0:
 
 "spellforgejs@https://github.com/drgarbage/spellforgejs.git":
   version "1.0.0"
-  resolved "https://github.com/drgarbage/spellforgejs.git#955cc067c948535e4c36ef14112a0b47ec0281e2"
+  resolved "https://github.com/drgarbage/spellforgejs.git#7944c3e9e4dc6dfe4fe596b13c50e80ae623bf8c"
   dependencies:
     axios "^1.5.1"
     exifreader "^4.15.0"
